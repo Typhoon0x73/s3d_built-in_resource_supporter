@@ -1,0 +1,1 @@
+# s3d_built-in_resource_supporter
