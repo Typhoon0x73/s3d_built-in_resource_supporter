@@ -15,6 +15,12 @@ namespace sip
 	{
 	}
 
+	void ResourceInfo::clear() noexcept
+	{
+		sections_.clear();
+		footer_comment_ = U"";
+	}
+
 	bool ResourceInfo::open(FilePathView path) noexcept
 	{
 		TextReader reader{ path };
@@ -23,6 +29,7 @@ namespace sip
 			Logger << path << U" : ファイルを開けませんでした。\n";
 			return false;
 		}
+		clear();
 		return ResourceParser::parse(reader.readAll(), this);
 	}
 

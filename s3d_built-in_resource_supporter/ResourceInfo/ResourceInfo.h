@@ -18,6 +18,9 @@ namespace sip
 		~ResourceInfo() noexcept;
 
 		/// @brief 
+		void clear() noexcept;
+
+		/// @brief 
 		/// @param path 
 		/// @return 
 		[[nodiscard]] bool open(FilePathView path) noexcept;
