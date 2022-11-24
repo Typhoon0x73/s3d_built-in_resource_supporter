@@ -277,6 +277,12 @@ void Main()
 				}
 			}
 
+			// ファイル名のみ表示切り替え
+			if (getToggleEnableRect(resource_render_rect.pos - Vec2{ -20, 35 }, 26).leftClicked())
+			{
+				is_only_file_name = !is_only_file_name;
+			}
+
 			// リソースの選択
 			if (resource_info)
 			{
@@ -437,6 +443,7 @@ void Main()
 				tag_render_target.draw(tag_render_rect.pos);
 			}
 
+			// ファイル名のみ表示切り替えボタン描画
 			drawEnable(is_only_file_name, resource_render_rect.pos - Vec2{ -20, 35 }, 26, Palette::Royalblue, Palette::Silver);
 			//if (SimpleGUI::CheckBox(is_only_file_name, U"only file name", resource_render_rect.pos - Vec2{ -20, 45 }))
 			{
