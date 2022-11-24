@@ -59,6 +59,19 @@ namespace sip
 		rect.bottom().draw(LineStyle::SquareDot(offset), thickness);
 		rect.left().draw(LineStyle::SquareDot(offset), thickness);
 	}
+
+	void drawEnable(bool enable, const Vec2& pos, double height, const ColorF& active_color, const ColorF& disable_color)
+	{
+		Circle circle{ { 0.0, 0.0 }, height * 0.4 };
+		RectF rect{ pos, height * 1.5, height };
+		ColorF color = (enable ? active_color : disable_color);
+		rect.rounded(height * 0.5)
+			.draw(color)
+			.drawFrame(2.0, 0.0, ColorF{ 0.25, 0.25 }, ColorF{ 0.75, 0.75 })
+			;
+		circle.setPos(rect.center() + Vec2{ height * 0.25 * (enable ? -1 : 1), 0});
+		circle.draw(Palette::Gainsboro);
+	}
 }
 
 void Main()
@@ -118,8 +131,9 @@ void Main()
 		tab_draw_pos.x, tab_draw_pos.y + tab->getTabRect(0).h + 10,
 		200, 400
 	};
-	double tag_scroll[] = { 0.0, 0.0 };
+	Vec2 tag_scroll[] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
 	RenderTexture tag_render_target(tag_render_rect.w, tag_render_rect.h);
+	SizeF tag_page_size[] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
 
 	// リソース
 	Optional<size_t> select_resource_no[] = { none, none };
@@ -128,8 +142,9 @@ void Main()
 		tag_render_rect.rightX() + 10, tag_render_rect.y,
 		400, tag_render_rect.h
 	};
-	double resource_scroll[] = { 0.0, 0.0 };
+	Vec2 resource_scroll[] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
 	RenderTexture resource_render_target(resource_render_rect.w, resource_render_rect.h);
+	SizeF resource_page_size[] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
 
 	// ゲームループ
 	while (System::Update())
@@ -205,7 +220,7 @@ void Main()
 				const auto& font = SimpleGUI::GetFont();
 				if (auto section = resource_info->getSection(section_no))
 				{
-					double offset_y = 10 - tag_scroll[section_no - 1] + tag_render_rect.y;
+					double offset_y = 10 - tag_scroll[section_no - 1].y + tag_render_rect.y;
 					const auto& tags = section->getTags();
 					for (size_t i = 0; i < tags.size(); ++i)
 					{
@@ -218,12 +233,16 @@ void Main()
 							select_resource_no[section_no - 1] = none;
 							break;
 						}
-						offset_y += 30;
+						offset_y += 35;
 					}
+					tag_page_size[section_no - 1].y = tags.size() * 35 + 20;
 				}
 				if (tag_render_rect.mouseOver())
 				{
-					tag_scroll[section_no - 1] += Mouse::Wheel() * 8;
+					tag_scroll[section_no - 1].y += Mouse::Wheel() * 8;
+
+					auto scroll_max = tag_page_size[section_no - 1].y - tag_render_rect.h;
+					tag_scroll[section_no - 1].y = Clamp(tag_scroll[section_no - 1].y, 0.0, Max(scroll_max, 0.0));
 				}
 			}
 
@@ -237,27 +256,31 @@ void Main()
 				const auto& section = resource_info->getSection(section_no);
 				if (tag_no && section)
 				{
-					double offset_y = 10 - resource_scroll[section_no - 1] + resource_render_rect.y;
+					double offset_y = 10 - resource_scroll[section_no - 1].y + resource_render_rect.y;
 					if (const auto& tag = section->getTag(tag_no.value()))
 					{
 						const auto& resources = tag->getResources();
 						for (size_t i = 0; i < resources.size(); ++i)
 						{
 							auto select_rect = font(resources[i]->getPath())
-								.region(resource_render_rect.x + 10, offset_y);
+								.region(resource_render_rect.x + 65, offset_y);
 							select_rect.w = resource_render_rect.w - 20;
 							if (select_rect.leftClicked())
 							{
 								select_resource_no[section_no - 1] = i;
 								break;
 							}
-							offset_y += 30;
+							offset_y += 35;
 						}
+						resource_page_size[section_no - 1].y = resources.size() * 35 + 20;
 					}
 				}
 				if (resource_render_rect.mouseOver())
 				{
-					resource_scroll[section_no - 1] += Mouse::Wheel() * 8;
+					resource_scroll[section_no - 1].y += Mouse::Wheel() * 8;
+
+					auto scroll_max = resource_page_size[section_no - 1].y - resource_render_rect.h;
+					resource_scroll[section_no - 1].y = Clamp(resource_scroll[section_no - 1].y, 0.0, Max(scroll_max, 0.0));
 				}
 			}
 
@@ -269,8 +292,8 @@ void Main()
 			// パス用矩形表示
 			RectF path_rect{ 150, 60, 500, 30 };
 			path_rect.rounded(5.0)
-				.drawShadow({  1,  1 }, 3.0, 0.0, Palette::Whitesmoke)
-				.drawShadow({ -1, -1 }, 3.0, 0.0, Palette::Darkgray)
+				.drawShadow({  2,  2 }, 5.0, 0.0, Palette::Whitesmoke)
+				.drawShadow({ -2, -2 }, 5.0, 0.0, Palette::Darkgray)
 				.draw(col_mng->getMainBackground());
 
 			// パスがあれば表示する
@@ -299,8 +322,8 @@ void Main()
 						? ColorF(Palette::Gainsboro)
 						: col_mng->getMainBackground());
 				open_file_rect.rounded(5.0)
-					.drawShadow({ -1, -1 }, 3.0, 0.0, Palette::Whitesmoke)
-					.drawShadow({  1,  1 }, 3.0, 0.0, Palette::Darkgray)
+					.drawShadow({ -2, -2 }, 5.0, 0.0, Palette::Whitesmoke)
+					.drawShadow({  2,  2 }, 5.0, 0.0, Palette::Darkgray)
 					.draw(base_col);
 				const auto tex_scale =
 					open_file_rect.w / open_file_texture.width();
@@ -328,7 +351,7 @@ void Main()
 					const auto& font = SimpleGUI::GetFont();
 					if (auto section = resource_info->getSection(section_no))
 					{
-						double offset_y = 10 - tag_scroll[section_no - 1];
+						double offset_y = 10 - tag_scroll[section_no - 1].y;
 						const auto& tags = section->getTags();
 						for (size_t i = 0; i < tags.size(); ++i)
 						{
@@ -338,16 +361,16 @@ void Main()
 							{
 								auto select_rect = font(tags[i]->getName())
 									.region(10, offset_y).stretched(2, 0);
-								select_rect.w = tag_render_rect.w - 20;
-								drawDotRect(select_rect);
+								select_rect.w = Max(select_rect.w, tag_render_rect.w - 20);
+								sip::drawDotRect(select_rect);
 							}
-							offset_y += 30;
+							offset_y += 35;
 						}
 					}
 				}
 				tag_render_rect.rounded(5.0)
-					.drawShadow({ -1, -1 }, 3.0, 0.0, Palette::Darkgray)
-					.drawShadow({  1,  1 }, 3.0, 0.0, Palette::Whitesmoke)
+					.drawShadow({ -3, -3 }, 5.0, 0.0, Palette::Darkgray)
+					.drawShadow({  3,  3 }, 5.0, 0.0, Palette::Whitesmoke)
 					.draw(col_mng->getMainBackground());
 				tag_render_target.draw(tag_render_rect.pos);
 			}
@@ -365,27 +388,29 @@ void Main()
 					const auto& section = resource_info->getSection(section_no);
 					if (tag_no && section)
 					{
-						double offset_y = 10 - resource_scroll[section_no - 1];
+						double offset_y = 10 - resource_scroll[section_no - 1].y;
 						const auto& tag = section->getTag(tag_no.value());
 						const auto& resources = tag->getResources();
 						for (size_t i = 0; i < resources.size(); ++i)
 						{
-							font(resources[i]->getPath()).draw(10, offset_y, Palette::Dimgray);
+							bool enable = resources[i]->isEnable();
+							drawEnable(enable, Vec2{ 10, offset_y + 5 }, 30, Palette::Royalblue, Palette::Silver);
+							font(resources[i]->getPath()).draw(65, offset_y, Palette::Dimgray);
 							if (select_resource_no[section_no - 1].has_value()
 								&& i == select_resource_no[section_no - 1].value())
 							{
 								auto select_rect = font(resources[i]->getPath())
-									.region(10, offset_y).stretched(2, 0);
-								select_rect.w = resource_render_rect.w - 20;
-								drawDotRect(select_rect);
+									.region(65, offset_y).stretched(2, 0);
+								select_rect.w = Max(select_rect.w, resource_render_rect.w - 20);
+								sip::drawDotRect(select_rect);
 							}
-							offset_y += 30;
+							offset_y += 35;
 						}
 					}
 				}
 				resource_render_rect.rounded(5.0)
-					.drawShadow({ -1, -1 }, 3.0, 0.0, Palette::Darkgray)
-					.drawShadow({ 1,  1 }, 3.0, 0.0, Palette::Whitesmoke)
+					.drawShadow({ -3, -3 }, 5.0, 0.0, Palette::Darkgray)
+					.drawShadow({  3,  3 }, 5.0, 0.0, Palette::Whitesmoke)
 					.draw(col_mng->getMainBackground());
 				resource_render_target.draw(resource_render_rect.pos);
 			}
