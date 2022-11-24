@@ -151,6 +151,7 @@ void Main()
 
 	// リソース
 	Optional<size_t> select_resource_no[] = { none, none };
+	bool is_only_file_name = false;
 	RectF regist_button_rect{ 0, 0, 100, 30 };
 	RectF resource_render_rect{
 		tag_render_rect.rightX() + 10, tag_render_rect.y,
@@ -301,7 +302,12 @@ void Main()
 						const auto& resources = tag->getResources();
 						for (size_t i = 0; i < resources.size(); ++i)
 						{
-							auto select_rect = font(resources[i]->getPath())
+							FilePath path{ resources[i]->getPath() };
+							if (is_only_file_name)
+							{
+								path = FileSystem::FileName(FileSystem::FullPath(path));
+							}
+							auto select_rect = font(path)
 								.region(resource_render_rect.x + 65, offset_y);
 							select_rect.w = resource_render_rect.w - 70;
 							if (select_rect.leftClicked())
@@ -414,6 +420,12 @@ void Main()
 				tag_render_target.draw(tag_render_rect.pos);
 			}
 
+			drawEnable(is_only_file_name, resource_render_rect.pos - Vec2{ -20, 35 }, 26, Palette::Royalblue, Palette::Silver);
+			//if (SimpleGUI::CheckBox(is_only_file_name, U"only file name", resource_render_rect.pos - Vec2{ -20, 45 }))
+			{
+
+			}
+
 			// リソースの描画
 			if (resource_info)
 			{
@@ -433,14 +445,19 @@ void Main()
 						for (size_t i = 0; i < resources.size(); ++i)
 						{
 							bool enable = resources[i]->isEnable();
-							drawEnable(enable, Vec2{ 10, offset_y + 5 }, 30, Palette::Royalblue, Palette::Silver);
-							font(resources[i]->getPath()).draw(65, offset_y, Palette::Dimgray);
+							drawEnable(enable, Vec2{ 10, offset_y + 6 }, 24, Palette::Royalblue, Palette::Silver);
+							FilePath path{ resources[i]->getPath() };
+							if (is_only_file_name)
+							{
+								path = FileSystem::FileName(FileSystem::FullPath(path));
+							}
+							font(path).draw(65, offset_y, Palette::Dimgray);
 							if (select_resource_no[section_no - 1].has_value()
 								&& i == select_resource_no[section_no - 1].value())
 							{
-								auto select_rect = font(resources[i]->getPath())
+								auto select_rect = font(path)
 									.region(65, offset_y).stretched(2, 0);
-								select_rect.w = Max(select_rect.w, resource_render_rect.w - 20);
+								select_rect.w = Max(select_rect.w, resource_render_rect.w - 70);
 								sip::drawDotRect(select_rect);
 							}
 							offset_y += 35;
