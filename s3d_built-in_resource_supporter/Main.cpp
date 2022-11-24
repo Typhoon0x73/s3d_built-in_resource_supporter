@@ -3,6 +3,7 @@
 # include "SettingsINI.h"
 # include "WindowInfo.h"
 # include "Command/CommandManager.h"
+# include "Command/ToggleEnableCommand.h"
 # include "ThemeColor/ThemeColorManager.h"
 # include "Dialog/DialogManager.h"
 # include "MenuFunc.h"
@@ -74,13 +75,17 @@ namespace sip
 		rect.left().draw(LineStyle::SquareDot(offset), thickness);
 	}
 
+	RoundRect getToggleEnableRect(const Vec2& pos, double height)
+	{
+		return RectF{ pos, height * 1.5, height }.rounded(height * 0.5);
+	}
+
 	void drawEnable(bool enable, const Vec2& pos, double height, const ColorF& active_color, const ColorF& disable_color)
 	{
 		Circle circle{ { 0.0, 0.0 }, height * 0.4 };
-		RectF rect{ pos, height * 1.5, height };
+		auto rect = getToggleEnableRect(pos, height);
 		ColorF color = (enable ? active_color : disable_color);
-		rect.rounded(height * 0.5)
-			.draw(color)
+		rect.draw(color)
 			.drawFrame(2.0, 0.0, ColorF{ 0.25, 0.25 }, ColorF{ 0.75, 0.75 })
 			;
 		circle.setPos(rect.center() + Vec2{ height * 0.25 * (enable ? -1 : 1), 0});
@@ -302,6 +307,18 @@ void Main()
 						const auto& resources = tag->getResources();
 						for (size_t i = 0; i < resources.size(); ++i)
 						{
+							auto toggle_rect = getToggleEnableRect(Vec2{ 10, offset_y + 6 }, 24).movedBy(resource_render_rect.x, 0);
+							if (toggle_rect.leftClicked())
+							{
+								ToggleEnableCommand::CreateInfo info;
+								info.section = section_no;
+								info.tag = tag->getName();
+								info.index = i;
+								if (!cmd_mng->regist(std::move(std::make_unique<ToggleEnableCommand>(info))))
+								{
+
+								}
+							}
 							FilePath path{ resources[i]->getPath() };
 							if (is_only_file_name)
 							{
