@@ -73,6 +73,10 @@ namespace sip
 		/// @return 
 		[[nodiscard]] const XMLDatas& getChildren() const noexcept;
 
+		/// @brief 
+		/// @return 
+		[[nodiscard]] bool existData() const noexcept;
+
 	private:
 
 		/// @brief 
