@@ -17,8 +17,8 @@ namespace sip
 			RectF tab = getTabRect(i).movedBy(pos);
 
 			ColorF base_color = color;
-			Vec2 topleft{ -1, -1 };
-			Vec2 bottomright{ 1, 1 };
+			Vec2 topleft{ -2, -2 };
+			Vec2 bottomright{ 2, 2 };
 			
 			if (i == active_index_)
 			{
@@ -30,8 +30,8 @@ namespace sip
 			}
 
 			tab.rounded(radius)
-				.drawShadow(topleft, 3.0, 0.0, Palette::Whitesmoke)
-				.drawShadow(bottomright, 3.0, 0.0, Palette::Darkgray)
+				.drawShadow(topleft, 5.0, 0.0, Palette::Whitesmoke)
+				.drawShadow(bottomright, 5.0, 0.0, Palette::Darkgray)
 				.draw(base_color);
 		}
 
