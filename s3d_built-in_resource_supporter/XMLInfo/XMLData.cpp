@@ -157,9 +157,9 @@ namespace sip
 	bool XMLData::existData() const noexcept
 	{
 		return (element_->getAttributes().size() > 0)
-			&& (element_->getTag().compare(U"") != 0)
-			&& (element_->getValue().compare(U"") != 0)
-			&& (children_.size() > 0)
+			|| (element_->getTag().compare(U"") != 0)
+			|| (element_->getValue().compare(U"") != 0)
+			|| (children_.size() > 0)
 			;
 	}
 }
