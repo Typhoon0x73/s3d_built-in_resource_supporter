@@ -353,3 +353,4 @@ MigrationBackup/
 *[Dd]ebug*
 *[Rr]elease*
 settings.ini
+s3d_built-in_resource_supporter/App/test/*
