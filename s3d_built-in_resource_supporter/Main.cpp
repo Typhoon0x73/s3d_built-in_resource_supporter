@@ -16,6 +16,16 @@ using namespace sip;
 
 namespace sip
 {
+	enum class MenuItemName
+	{
+		File,
+		Edit,
+		View,
+
+		MAX,
+	};
+	constexpr size_t menu_item_name_count = static_cast<size_t>(MenuItemName::MAX);
+
 	/// @brief 
 	struct MenuItem
 	{
@@ -28,18 +38,22 @@ namespace sip
 		/// @brief 
 		Array<std::function<bool()>> funcs;
 
+		Array<std::function<bool()>> enable_funcs;
+
 	} static const menu_item_table[] =
 	{
 		{
 			U"file",
 			{ U"open", U"save", U"close" },
-			{ MenuFunc::fileOpen, MenuFunc::fileSave, MenuFunc::fileClose }
+			{ MenuFunc::fileOpen, MenuFunc::fileSave, MenuFunc::fileClose },
+			{ []() { return true; }, MenuEnableFunc::isOpen, MenuEnableFunc::isOpen }
 		},
 
 		{
 			U"edit",
-			{ U"undo", U"redo" },
-			{ MenuFunc::undo, MenuFunc::redo }
+			{ U"undo", U"redo", U"regist resource" },
+			{ MenuFunc::undo, MenuFunc::redo, MenuFunc::registResource },
+			{ MenuEnableFunc::existExecCommand, MenuEnableFunc::existUndoCommand, MenuEnableFunc::isOpen }
 		},
 
 		{
@@ -142,8 +156,12 @@ void Main()
 		tag_render_rect.rightX() + 10, tag_render_rect.y,
 		400, tag_render_rect.h
 	};
+	RectF toggle_render_rect{
+		resource_render_rect.stretched(0, -300, 0, -10)
+	};
 	Vec2 resource_scroll[] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
 	RenderTexture resource_render_target(resource_render_rect.w, resource_render_rect.h);
+	RenderTexture toggle_render_target(toggle_render_rect.w, toggle_render_rect.h);
 	SizeF resource_page_size[] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
 
 	// ゲームループ
@@ -165,6 +183,13 @@ void Main()
 				break;
 			}
 			// メニューバーの更新
+			for (size_t i = 0; i < menu_item_name_count; i++)
+			{
+				for (size_t k = 0; k < menu_item_table[i].items.size(); k++)
+				{
+					menubar.setItemEnabled(i, k, menu_item_table[i].enable_funcs[k]());
+				}
+			}
 			if (auto select_menu_item = menubar.update())
 			{
 				const auto& value = select_menu_item.value();
@@ -256,6 +281,20 @@ void Main()
 				const auto& section = resource_info->getSection(section_no);
 				if (tag_no && section)
 				{
+					if (tag_no == 0)
+					{
+						auto line_y = resource_render_rect.h - (regist_button_rect.h + 20);
+						auto button_rect = regist_button_rect
+							.movedBy((resource_render_rect.w - regist_button_rect.w) * 0.5, line_y + 10.0)
+							.movedBy(resource_render_rect.pos);
+						if (button_rect.leftClicked())
+						{
+							if (!MenuFunc::registResource())
+							{
+
+							}
+						}
+					}
 					double offset_y = 10 - resource_scroll[section_no - 1].y + resource_render_rect.y;
 					if (const auto& tag = section->getTag(tag_no.value()))
 					{
@@ -264,7 +303,7 @@ void Main()
 						{
 							auto select_rect = font(resources[i]->getPath())
 								.region(resource_render_rect.x + 65, offset_y);
-							select_rect.w = resource_render_rect.w - 20;
+							select_rect.w = resource_render_rect.w - 70;
 							if (select_rect.leftClicked())
 							{
 								select_resource_no[section_no - 1] = i;
@@ -272,7 +311,7 @@ void Main()
 							}
 							offset_y += 35;
 						}
-						resource_page_size[section_no - 1].y = resources.size() * 35 + 20;
+						resource_page_size[section_no - 1].y = resources.size() * 35 + 20 + regist_button_rect.h + 20;
 					}
 				}
 				if (resource_render_rect.mouseOver())
@@ -406,6 +445,26 @@ void Main()
 							}
 							offset_y += 35;
 						}
+						if (tab_no == 0)
+						{
+							auto line_y = resource_render_rect.h - (regist_button_rect.h + 20);
+							RectF line_rect{ 0, line_y, resource_render_rect.size };
+							line_rect
+								.drawShadow({ 0, -2 }, 5.0, 0.0, Palette::Whitesmoke)
+								.draw(col_mng->getMainBackground());
+							auto button_color =
+								(regist_button_rect
+									.movedBy((resource_render_rect.w - regist_button_rect.w) * 0.5, line_y + 10.0)
+									.movedBy(resource_render_rect.pos).mouseOver()
+								? ColorF{ Palette::Gainsboro } 
+								: col_mng->getMainBackground());
+							regist_button_rect
+								.movedBy((resource_render_rect.w - regist_button_rect.w) * 0.5, line_y + 10.0)
+								.rounded(5.0)
+								.drawShadow({  3,  3 }, 5.0, 0.0, Palette::Darkgray)
+								.drawShadow({ -3, -3 }, 5.0, 0.0, Palette::Whitesmoke)
+								.draw(button_color);
+						}
 					}
 				}
 				resource_render_rect.rounded(5.0)
@@ -417,7 +476,7 @@ void Main()
 
 			// メニューバーの描画
 			menubar.draw();
-
+			
 			// ダイアログの描画
 			dlg_mng->draw();
 
