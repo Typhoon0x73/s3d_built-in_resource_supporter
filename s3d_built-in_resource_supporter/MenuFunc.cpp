@@ -2,6 +2,7 @@
 #include "MenuFunc.h"
 #include "ResourceInfo/ResourceInfo.h"
 #include "XMLInfo/XMLInfo.h"
+#include "XMLInfo/XMLData.h"
 #include "XMLInfo/EditVcxproj.h"
 #include "XMLInfo/EditFilters.h"
 #include "Command/CommandManager.h"
@@ -39,6 +40,10 @@ namespace sip
 			)
 		{
 			Logger << U"アプリケーションデータが正常に取得できませんでした。\n";
+			return false;
+		}
+		if (!MenuFunc::fileClose())
+		{
 			return false;
 		}
 		*vcxproj_path = FileSystem::FullPath(open_path.value());
@@ -91,6 +96,19 @@ namespace sip
 
 	bool MenuFunc::fileClose() noexcept
 	{
+		auto resource_info = g_pGetBlackboard(ResourceInfo* const)->get("resource_info");
+		auto vcxproj_info = g_pGetBlackboard(XMLInfo* const)->get("vcxproj_info");
+		auto filters_info = g_pGetBlackboard(XMLInfo* const)->get("filters_info");
+		if (resource_info == nullptr
+			|| vcxproj_info == nullptr
+			|| filters_info == nullptr)
+		{
+			Logger << U"アプリケーションデータが正常に取得できませんでした。\n";
+			return false;
+		}
+		resource_info->clear();
+		vcxproj_info->clear();
+		filters_info->clear();
 		return true;
 	}
 
@@ -126,5 +144,45 @@ namespace sip
 		}
 		dialog_manager->regist(std::move(std::make_unique<RegistResourceDialog>()));
 		return true;
+	}
+
+	bool MenuEnableFunc::isOpen() noexcept
+	{
+		auto resource_info = g_pGetBlackboard(ResourceInfo* const)->get("resource_info");
+		auto vcxproj_info  = g_pGetBlackboard(XMLInfo*      const)->get("vcxproj_info");
+		auto filters_info  = g_pGetBlackboard(XMLInfo*      const)->get("filters_info");
+		if(resource_info == nullptr
+			|| vcxproj_info == nullptr
+			|| filters_info == nullptr)
+		{
+			Logger << U"アプリケーションデータが正常に取得できませんでした。\n";
+			return false;
+		}
+		return (resource_info->getSectionSize() > 0)
+			&& (vcxproj_info->getRoot()->existData())
+			&& (filters_info->getRoot()->existData())
+			;
+	}
+
+	bool MenuEnableFunc::existExecCommand() noexcept
+	{
+		auto command_manager = g_pGetBlackboard(CommandManager* const)->get("command_manager");
+		if (command_manager == nullptr)
+		{
+			Logger << U"コマンドマネージャーが正常に取得できませんでした。\n";
+			return false;
+		}
+		return (command_manager->executeList().size() > 0);
+	}
+
+	bool MenuEnableFunc::existUndoCommand() noexcept
+	{
+		auto command_manager = g_pGetBlackboard(CommandManager* const)->get("command_manager");
+		if (command_manager == nullptr)
+		{
+			Logger << U"コマンドマネージャーが正常に取得できませんでした。\n";
+			return false;
+		}
+		return (command_manager->undoList().size() > 0);
 	}
 }
