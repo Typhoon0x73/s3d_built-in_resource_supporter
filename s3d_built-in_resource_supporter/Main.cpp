@@ -39,6 +39,7 @@ namespace sip
 		/// @brief 
 		Array<std::function<bool()>> funcs;
 
+		/// @brief 
 		Array<std::function<bool()>> enable_funcs;
 
 	} static const menu_item_table[] =
@@ -159,7 +160,7 @@ void Main()
 	// リソース
 	Optional<size_t> select_resource_no[] = { none, none };
 	bool is_only_file_name = false;
-	RectF regist_button_rect{ 0, 0, 100, 30 };
+	RectF regist_button_rect{ 0, 0, 250, 30 };
 	RectF resource_render_rect{
 		tag_render_rect.rightX() + 10, tag_render_rect.y,
 		400, tag_render_rect.h
@@ -502,12 +503,13 @@ void Main()
 									.movedBy(resource_render_rect.pos).mouseOver()
 								? ColorF{ Palette::Gainsboro } 
 								: col_mng->getMainBackground());
-							regist_button_rect
+							auto draw_regist_region = regist_button_rect
 								.movedBy((resource_render_rect.w - regist_button_rect.w) * 0.5, line_y + 10.0)
 								.rounded(5.0)
 								.drawShadow({  3,  3 }, 5.0, 0.0, Palette::Darkgray)
 								.drawShadow({ -3, -3 }, 5.0, 0.0, Palette::Whitesmoke)
 								.draw(button_color);
+							SimpleGUI::GetFont()(U"regist resource").drawAt(draw_regist_region.center(), Palette::Dimgray);
 						}
 					}
 				}
