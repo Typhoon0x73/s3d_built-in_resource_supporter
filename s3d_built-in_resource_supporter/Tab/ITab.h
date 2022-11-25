@@ -16,12 +16,15 @@ namespace sip
 		/// @brief 
 		virtual ~ITab() = default;
 
+		/// @brief 
+		virtual void update() = 0;
+
 		/// @brief すべてのタブを描画します。
-		/// @param pos タブ描画開始位置
-		/// @param font テキスト描画に使うフォント（FontMethod::MSDF 設定で作成）
-		/// @param color アクティブなタブの背景色
-		/// @param outlineColor タブの枠の色
-		virtual void draw(const Vec2& pos, const Font& font, const ColorF& color, const ColorF& outlineColor) const = 0;
+		virtual void draw() const = 0;
+
+		/// @brief 
+		/// @return 
+		virtual const Vec2& getPos() const noexcept = 0;
 
 		/// @brief タブの個数を返します。
 		/// @return タブの個数
@@ -30,6 +33,16 @@ namespace sip
 		/// @brief アクティブなタブのインデックスを返します。
 		/// @return アクティブなタブのインデックス
 		virtual size_t getActiveTabIndex() const noexcept = 0;
+
+		/// @brief 
+		/// @param pos 
+		/// @return 
+		virtual void setPos(const Vec2& pos) noexcept = 0;
+
+		/// @brief 
+		/// @param font 
+		/// @return 
+		virtual void setFont(const Font& font) noexcept = 0;
 
 		/// @brief アクティブなタブを変更します。
 		/// @param index アクティブにするタブのインデックス

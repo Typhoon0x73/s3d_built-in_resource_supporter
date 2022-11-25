@@ -2,21 +2,25 @@
 
 namespace sip
 {
-	SimpleTab::SimpleTab(const SizeF& tabSize, const Array<String>& items)
-		: TabBase{ tabSize, items }
+	SimpleTab::SimpleTab(const Font& font, const Vec2& pos, const SizeF& tabSize, const Array<String>& items)
+		: TabBase{ font, pos, tabSize, items }
 	{
 	}
 
-	void SimpleTab::draw(const Vec2& pos, const Font& font, const ColorF& color, const ColorF&) const
+	void SimpleTab::update()
+	{
+	}
+
+	void SimpleTab::draw() const
 	{
 		constexpr double Thickness = 10.0;
 		const double radius = (tab_size_.y * 0.25);
 
 		for (size_t i = 0; i < items_.size(); ++i)
 		{
-			RectF tab = getTabRect(i).movedBy(pos);
+			RectF tab = getTabRect(i).movedBy(pos_);
 
-			ColorF base_color = color;
+			ColorF base_color = Palette::Lightgray;
 			Vec2 topleft{ -2, -2 };
 			Vec2 bottomright{ 2, 2 };
 			
@@ -37,9 +41,9 @@ namespace sip
 
 		for (size_t i = 0; i < items_.size(); ++i)
 		{
-			const RectF tab = getTabRect(i).movedBy(pos);
+			const RectF tab = getTabRect(i).movedBy(pos_);
 
-			font(items_[i])
+			font_(items_[i])
 				.drawAt(
 					tab.h * 0.65, tab.center(), Palette::Dimgray
 				);

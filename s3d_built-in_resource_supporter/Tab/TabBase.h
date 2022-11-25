@@ -12,9 +12,18 @@ namespace sip
 	public:
 
 		/// @brief 
+		/// @param font 
+		/// @param pos 
 		/// @param tabSize 
 		/// @param items 
-		explicit TabBase(const SizeF& tabSize, const Array<String>& items);
+		explicit TabBase(const Font& font, const Vec2& pos, const SizeF& tabSize, const Array<String>& items);
+
+		/// @brief 
+		virtual void update() override;
+
+		/// @brief 
+		/// @return 
+		virtual const Vec2& getPos() const noexcept override;
 
 		/// @brief タブの個数を返します。
 		/// @return タブの個数
@@ -27,6 +36,16 @@ namespace sip
 		/// @brief アクティブなタブを変更します。
 		/// @param index アクティブにするタブのインデックス
 		virtual void setActiveTabIndex(size_t index) noexcept override;
+
+		/// @brief 
+		/// @param pos 
+		/// @return 
+		virtual void setPos(const Vec2& pos) noexcept override;
+
+		/// @brief 
+		/// @param font 
+		/// @return 
+		virtual void setFont(const Font& font) noexcept override;
 
 		/// @brief タブを左右に移動します。
 		/// @param offset 左に移動する場合 -1, 右に移動する場合は +1
@@ -43,6 +62,12 @@ namespace sip
 
 		/// @brief 
 		size_t active_index_;
+
+		/// @brief 
+		Vec2 pos_;
+
+		/// @brief 
+		Font font_;
 
 	};
 }

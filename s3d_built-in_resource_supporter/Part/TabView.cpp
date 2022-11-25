@@ -7,7 +7,7 @@ namespace sip
 {
 	TabView::TabView(const Array<String>& items, const Vec2& pos) noexcept
 		: draw_pos_{ pos }
-		, tab_{ new SimpleTab(Size{ 100, 30 }, items) }
+		, tab_{ new SimpleTab(SimpleGUI::GetFont(), pos, Size{ 100, 30 }, items) }
 	{
 	}
 
@@ -38,17 +38,7 @@ namespace sip
 		{
 			return;
 		}
-		auto col_mng = g_pGetBlackboard(ThemeColorManager* const)->get("theme_color_manager");
-		if (col_mng == nullptr)
-		{
-			return;
-		}
-		tab_->draw(
-			draw_pos_,
-			SimpleGUI::GetFont(),
-			col_mng->getMainBackground(),
-			ColorF{}
-		);
+		tab_->draw();
 	}
 
 	void TabView::setPos(const Vec2& pos) noexcept

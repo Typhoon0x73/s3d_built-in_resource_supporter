@@ -12,16 +12,17 @@ namespace sip
 	public:
 
 		/// @brief 
+		/// @param font 
+		/// @param pos 
 		/// @param tabSize 
 		/// @param items 
-		explicit SimpleTab(const SizeF& tabSize, const Array<String>& items);
+		explicit SimpleTab(const Font& font, const Vec2& pos, const SizeF& tabSize, const Array<String>& items);
+
+		/// @brief 
+		virtual void update() override;
 
 		/// @brief すべてのタブを描画します。
-		/// @param pos タブ描画開始位置
-		/// @param font テキスト描画に使うフォント（FontMethod::MSDF 設定で作成）
-		/// @param color アクティブなタブの背景色
-		/// @param outlineColor タブの枠の色
-		void draw(const Vec2& pos, const Font& font, const ColorF& color, const ColorF& outlineColor) const override;
+		virtual void draw() const override;
 
 		/// @brief 
 		/// @param index 

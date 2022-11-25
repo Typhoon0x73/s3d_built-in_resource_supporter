@@ -2,11 +2,22 @@
 
 namespace sip
 {
-	TabBase::TabBase(const SizeF& tabSize, const Array<String>& items)
+	TabBase::TabBase(const Font& font, const Vec2& pos, const SizeF& tabSize, const Array<String>& items)
 		: tab_size_{ tabSize }
 		, items_{ items }
 		, active_index_{ 0 }
+		, pos_{ pos }
+		, font_{ font }
 	{
+	}
+
+	void TabBase::update()
+	{
+	}
+
+	const Vec2& TabBase::getPos() const noexcept
+	{
+		return pos_;
 	}
 
 	size_t TabBase::getTabCount() const noexcept
@@ -23,6 +34,16 @@ namespace sip
 	{
 		assert(index < items_.size());
 		active_index_ = index;
+	}
+
+	void TabBase::setPos(const Vec2& pos) noexcept
+	{
+		pos_ = pos;
+	}
+
+	void TabBase::setFont(const Font& font) noexcept
+	{
+		font_ = font;
 	}
 
 	void TabBase::advance(int32 offset, bool wrapAround)
