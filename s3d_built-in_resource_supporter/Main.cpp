@@ -21,7 +21,7 @@ namespace sip
 	{
 		File,
 		Edit,
-		View,
+		Help,
 
 		MAX,
 	};
@@ -58,9 +58,10 @@ namespace sip
 		},
 
 		{
-			U"view",
-			{},
-			{}
+			U"help",
+			{ U"license view on webpage" },
+			{ []() { LicenseManager::ShowInBrowser(); return true; } },
+			{ []() { return true; } }
 		},
 	};
 
