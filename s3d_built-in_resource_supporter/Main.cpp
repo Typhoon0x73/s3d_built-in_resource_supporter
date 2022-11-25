@@ -12,6 +12,7 @@
 # include "ResourceInfo/ResourceSection.h"
 # include "ResourceInfo/ResourceTag.h"
 # include "ResourceInfo/ResourceData.h"
+# include "Part/TabView.h"
 
 using namespace sip;
 
@@ -143,14 +144,13 @@ void Main()
 
 	// タブ
 	Array<String> tab_items = { U"User", U"Engine" };
-	TabPtr tab = std::make_unique<SimpleTab>(Size{ 100, 30 }, tab_items);
-	Vec2   tab_draw_pos = Vec2{ 100, 110 };
+	TabView tab_view(tab_items, Vec2{ 100, 110 });
 	constexpr size_t section_table[] = { 2, 1 };
 
 	// タグ
 	Optional<size_t> select_tag_no[] = { none, none };
 	RectF tag_render_rect{
-		tab_draw_pos.x, tab_draw_pos.y + tab->getTabRect(0).h + 10,
+		tab_view.getPos().x, tab_view.getPos().y + tab_view.getTabRect(0).h + 10,
 		200, 400
 	};
 	Vec2 tag_scroll[] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
@@ -237,19 +237,12 @@ void Main()
 			}
 
 			// タブ操作
-			for (int32 i = 0; i < tab->getTabCount(); ++i)
-			{
-				if (tab->getTabRect(i).movedBy(tab_draw_pos).leftClicked())
-				{
-					tab->setActiveTabIndex(i);
-					break;
-				}
-			}
+			tab_view.update();
 
 			// タグの選択
 			if (resource_info)
 			{
-				const auto tab_no     = tab->getActiveTabIndex();
+				const auto tab_no     = tab_view.getSelectTabNo();
 				const auto section_no = section_table[tab_no];
 				const auto& font = SimpleGUI::GetFont();
 				if (auto section = resource_info->getSection(section_no))
@@ -289,7 +282,7 @@ void Main()
 			// リソースの選択
 			if (resource_info)
 			{
-				const auto tab_no     = tab->getActiveTabIndex();
+				const auto tab_no     = tab_view.getSelectTabNo();
 				const auto section_no = section_table[tab_no];
 				const auto tag_no     = select_tag_no[section_no - 1];
 				const auto& font = SimpleGUI::GetFont();
@@ -402,14 +395,7 @@ void Main()
 			}
 
 			// タブの描画
-			{
-				tab->draw(
-					tab_draw_pos,
-					SimpleGUI::GetFont(),
-					col_mng->getMainBackground(),
-					ColorF{}
-				);
-			}
+			tab_view.draw();
 
 			// タグの描画
 			if (resource_info)
@@ -417,7 +403,7 @@ void Main()
 				tag_render_target.clear(col_mng->getMainBackground());
 				{
 					ScopedRenderTarget2D target{ tag_render_target };
-					const size_t tab_no     = tab->getActiveTabIndex();
+					const size_t tab_no     = tab_view.getSelectTabNo();
 					const size_t section_no = section_table[tab_no];
 					const auto& font = SimpleGUI::GetFont();
 					if (auto section = resource_info->getSection(section_no))
@@ -460,7 +446,7 @@ void Main()
 				resource_render_target.clear(col_mng->getMainBackground());
 				{
 					ScopedRenderTarget2D target{ resource_render_target };
-					const size_t tab_no     = tab->getActiveTabIndex();
+					const size_t tab_no     = tab_view.getSelectTabNo();
 					const size_t section_no = section_table[tab_no];
 					const auto&  tag_no = select_tag_no[section_no - 1];
 					const auto& font = SimpleGUI::GetFont();
