@@ -80,7 +80,7 @@ namespace sip
 		return RectF{ pos, height * 1.5, height }.rounded(height * 0.5);
 	}
 
-	void drawEnable(bool enable, const Vec2& pos, double height, const ColorF& active_color, const ColorF& disable_color)
+	RoundRect drawEnable(bool enable, const Vec2& pos, double height, const ColorF& active_color, const ColorF& disable_color)
 	{
 		Circle circle{ { 0.0, 0.0 }, height * 0.4 };
 		auto rect = getToggleEnableRect(pos, height);
@@ -90,6 +90,7 @@ namespace sip
 			;
 		circle.setPos(rect.center() + Vec2{ height * 0.25 * (enable ? -1 : 1), 0});
 		circle.draw(Palette::Gainsboro);
+		return rect;
 	}
 }
 
@@ -444,11 +445,12 @@ void Main()
 			}
 
 			// ファイル名のみ表示切り替えボタン描画
-			drawEnable(is_only_file_name, resource_render_rect.pos - Vec2{ -20, 35 }, 26, Palette::Royalblue, Palette::Silver);
-			//if (SimpleGUI::CheckBox(is_only_file_name, U"only file name", resource_render_rect.pos - Vec2{ -20, 45 }))
-			{
-
-			}
+			auto toggle_file_name_rect = drawEnable(
+				is_only_file_name, resource_render_rect.pos - Vec2{ -20, 35 }, 26,
+				Palette::Royalblue, Palette::Silver
+			);
+			SimpleGUI::GetFont()(U"show file name only")
+				.draw(toggle_file_name_rect.rect.tr().x + 5, toggle_file_name_rect.y - 5, Palette::Dimgray);
 
 			// リソースの描画
 			if (resource_info)
