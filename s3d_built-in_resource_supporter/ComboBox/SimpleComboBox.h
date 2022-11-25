@@ -68,6 +68,15 @@ namespace sip
 
 		/// @brief 
 		bool is_open_;
+
+		/// @brief 
+		double scroll_;
+
+		/// @brief 
+		RectF pulldown_rect_;
+
+		/// @brief 
+		RenderTexture pulldown_render_target_;
 	};
 }
 
