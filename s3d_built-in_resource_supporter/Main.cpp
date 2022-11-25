@@ -160,7 +160,7 @@ void Main()
 	// リソース
 	Optional<size_t> select_resource_no[] = { none, none };
 	bool is_only_file_name = false;
-	RectF regist_button_rect{ 0, 0, 250, 30 };
+	RectF regist_button_rect{ 0, 0, 220, 30 };
 	RectF resource_render_rect{
 		tag_render_rect.rightX() + 10, tag_render_rect.y,
 		400, tag_render_rect.h
@@ -294,22 +294,22 @@ void Main()
 				const auto tag_no     = select_tag_no[section_no - 1];
 				const auto& font = SimpleGUI::GetFont();
 				const auto& section = resource_info->getSection(section_no);
-				if (tag_no && section)
+				if (tab_no == 0 && MenuEnableFunc::isOpen())
 				{
-					if (tag_no == 0)
+					auto line_y = resource_render_rect.h - (regist_button_rect.h + 20);
+					auto button_rect = regist_button_rect
+						.movedBy((resource_render_rect.w - regist_button_rect.w) * 0.5, line_y + 10.0)
+						.movedBy(resource_render_rect.pos);
+					if (button_rect.leftClicked())
 					{
-						auto line_y = resource_render_rect.h - (regist_button_rect.h + 20);
-						auto button_rect = regist_button_rect
-							.movedBy((resource_render_rect.w - regist_button_rect.w) * 0.5, line_y + 10.0)
-							.movedBy(resource_render_rect.pos);
-						if (button_rect.leftClicked())
+						if (!MenuFunc::registResource())
 						{
-							if (!MenuFunc::registResource())
-							{
 
-							}
 						}
 					}
+				}
+				if (tag_no && section)
+				{
 					double offset_y = 10 - resource_scroll[section_no - 1].y + resource_render_rect.y;
 					if (const auto& tag = section->getTag(tag_no.value()))
 					{
@@ -490,27 +490,27 @@ void Main()
 							}
 							offset_y += 35;
 						}
-						if (tab_no == 0)
-						{
-							auto line_y = resource_render_rect.h - (regist_button_rect.h + 20);
-							RectF line_rect{ 0, line_y, resource_render_rect.size };
-							line_rect
-								.drawShadow({ 0, -2 }, 5.0, 0.0, Palette::Whitesmoke)
-								.draw(col_mng->getMainBackground());
-							auto button_color =
-								(regist_button_rect
-									.movedBy((resource_render_rect.w - regist_button_rect.w) * 0.5, line_y + 10.0)
-									.movedBy(resource_render_rect.pos).mouseOver()
-								? ColorF{ Palette::Gainsboro } 
-								: col_mng->getMainBackground());
-							auto draw_regist_region = regist_button_rect
+					}
+					if (tab_no == 0 && MenuEnableFunc::isOpen())
+					{
+						auto line_y = resource_render_rect.h - (regist_button_rect.h + 20);
+						RectF line_rect{ 0, line_y, resource_render_rect.size };
+						line_rect
+							.drawShadow({ 0, -2 }, 5.0, 0.0, Palette::Whitesmoke)
+							.draw(col_mng->getMainBackground());
+						auto button_color =
+							(regist_button_rect
 								.movedBy((resource_render_rect.w - regist_button_rect.w) * 0.5, line_y + 10.0)
-								.rounded(5.0)
-								.drawShadow({  3,  3 }, 5.0, 0.0, Palette::Darkgray)
-								.drawShadow({ -3, -3 }, 5.0, 0.0, Palette::Whitesmoke)
-								.draw(button_color);
-							SimpleGUI::GetFont()(U"regist resource").drawAt(draw_regist_region.center(), Palette::Dimgray);
-						}
+								.movedBy(resource_render_rect.pos).mouseOver()
+							? ColorF{ Palette::Gainsboro } 
+							: col_mng->getMainBackground());
+						auto draw_regist_region = regist_button_rect
+							.movedBy((resource_render_rect.w - regist_button_rect.w) * 0.5, line_y + 10.0)
+							.rounded(5.0)
+							.drawShadow({  3,  3 }, 5.0, 0.0, Palette::Darkgray)
+							.drawShadow({ -3, -3 }, 5.0, 0.0, Palette::Whitesmoke)
+							.draw(button_color);
+						SimpleGUI::GetFont()(U"regist resource").drawAt(draw_regist_region.center(), Palette::Dimgray);
 					}
 				}
 				resource_render_rect.rounded(5.0)
