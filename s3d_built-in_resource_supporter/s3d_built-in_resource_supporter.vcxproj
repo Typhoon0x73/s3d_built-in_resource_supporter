@@ -114,6 +114,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ApplicationData.cpp" />
+    <ClCompile Include="ComboBox\SimpleComboBox.cpp" />
     <ClCompile Include="Command\CommandManager.cpp" />
     <ClCompile Include="Command\EraseFilterCommand.cpp" />
     <ClCompile Include="Command\EraseResourceCommand.cpp" />
@@ -351,6 +352,7 @@
     <ClInclude Include="Blackboard\Blackboard.h" />
     <ClInclude Include="Blackboard\ParameterMap.h" />
     <ClInclude Include="Blackboard\SingletonBlackboard.h" />
+    <ClInclude Include="ComboBox\SimpleComboBox.h" />
     <ClInclude Include="Command\CommandManager.h" />
     <ClInclude Include="Command\EraseFilterCommand.h" />
     <ClInclude Include="Command\EraseResourceCommand.h" />

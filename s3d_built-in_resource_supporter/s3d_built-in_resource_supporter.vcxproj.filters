@@ -178,6 +178,12 @@
     <Filter Include="Source Files\Tab">
       <UniqueIdentifier>{b87a5de4-6e5a-4c93-b532-5135eb0ef360}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ComboBox">
+      <UniqueIdentifier>{214c7d41-0639-4d05-b8c6-8a638174fa5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ComboBox">
+      <UniqueIdentifier>{afd26baa-3933-4187-9eb9-2478313abcb8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -287,6 +293,9 @@
     </ClCompile>
     <ClCompile Include="Tab\TabBase.cpp">
       <Filter>Source Files\Tab</Filter>
+    </ClCompile>
+    <ClCompile Include="ComboBox\SimpleComboBox.cpp">
+      <Filter>Source Files\ComboBox</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1057,6 +1066,9 @@
     </ClInclude>
     <ClInclude Include="Tab\TabBase.h">
       <Filter>Header Files\Tab</Filter>
+    </ClInclude>
+    <ClInclude Include="ComboBox\SimpleComboBox.h">
+      <Filter>Header Files\ComboBox</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
