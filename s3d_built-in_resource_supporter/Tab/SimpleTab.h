@@ -28,6 +28,10 @@ namespace sip
 		/// @param index 
 		/// @return 
 		virtual const RectF getTabRect(size_t index) const noexcept override;
+
+	protected:
+
+		int32 mouse_over_no_;
 	};
 }
 

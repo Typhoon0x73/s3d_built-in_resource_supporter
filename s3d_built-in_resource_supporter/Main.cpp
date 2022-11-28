@@ -12,7 +12,6 @@
 # include "ResourceInfo/ResourceSection.h"
 # include "ResourceInfo/ResourceTag.h"
 # include "ResourceInfo/ResourceData.h"
-# include "Part/TabView.h"
 
 using namespace sip;
 
@@ -144,17 +143,17 @@ void Main()
 
 	// タブ
 	Array<String> tab_items = { U"User", U"Engine" };
-	TabView tab_view(tab_items, Vec2{ 100, 110 });
+	TabPtr simple_tab(new SimpleTab(SimpleGUI::GetFont(), Vec2{ 100, 110 }, Size{ 100, 30 }, tab_items));
 	constexpr size_t section_table[] = { 2, 1 };
 
 	// タグ
 	Optional<size_t> select_tag_no[] = { none, none };
 	RectF tag_render_rect{
-		tab_view.getPos().x, tab_view.getPos().y + tab_view.getTabRect(0).h + 10,
+		simple_tab->getPos().x, simple_tab->getPos().y + simple_tab->getTabRect(0).h + 10,
 		200, 400
 	};
 	Vec2 tag_scroll[] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
-	RenderTexture tag_render_target(tag_render_rect.w, tag_render_rect.h);
+	RenderTexture tag_render_target((uint32)tag_render_rect.w, (uint32)tag_render_rect.h);
 	SizeF tag_page_size[] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
 
 	// リソース
@@ -169,8 +168,8 @@ void Main()
 		resource_render_rect.stretched(0, -300, 0, -10)
 	};
 	Vec2 resource_scroll[] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
-	RenderTexture resource_render_target(resource_render_rect.w, resource_render_rect.h);
-	RenderTexture toggle_render_target(toggle_render_rect.w, toggle_render_rect.h);
+	RenderTexture resource_render_target((uint32)resource_render_rect.w, (uint32)resource_render_rect.h);
+	RenderTexture toggle_render_target((uint32)toggle_render_rect.w, (uint32)toggle_render_rect.h);
 	SizeF resource_page_size[] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
 
 	// ゲームループ
@@ -237,12 +236,15 @@ void Main()
 			}
 
 			// タブ操作
-			tab_view.update();
+			if (simple_tab)
+			{
+				simple_tab->update();
+			}
 
 			// タグの選択
 			if (resource_info)
 			{
-				const auto tab_no     = tab_view.getSelectTabNo();
+				const auto tab_no     = simple_tab->getActiveTabIndex();
 				const auto section_no = section_table[tab_no];
 				const auto& font = SimpleGUI::GetFont();
 				if (auto section = resource_info->getSection(section_no))
@@ -262,7 +264,7 @@ void Main()
 						}
 						offset_y += 35;
 					}
-					tag_page_size[section_no - 1].y = tags.size() * 35 + 20;
+					tag_page_size[section_no - 1].y = tags.size() * 35.0 + 20.0;
 				}
 				if (tag_render_rect.mouseOver())
 				{
@@ -282,7 +284,7 @@ void Main()
 			// リソースの選択
 			if (resource_info)
 			{
-				const auto tab_no     = tab_view.getSelectTabNo();
+				const auto tab_no     = simple_tab->getActiveTabIndex();
 				const auto section_no = section_table[tab_no];
 				const auto tag_no     = select_tag_no[section_no - 1];
 				const auto& font = SimpleGUI::GetFont();
@@ -395,7 +397,10 @@ void Main()
 			}
 
 			// タブの描画
-			tab_view.draw();
+			if (simple_tab)
+			{
+				simple_tab->draw();
+			}
 
 			// タグの描画
 			if (resource_info)
@@ -403,7 +408,7 @@ void Main()
 				tag_render_target.clear(col_mng->getMainBackground());
 				{
 					ScopedRenderTarget2D target{ tag_render_target };
-					const size_t tab_no     = tab_view.getSelectTabNo();
+					const size_t tab_no     = simple_tab->getActiveTabIndex();
 					const size_t section_no = section_table[tab_no];
 					const auto& font = SimpleGUI::GetFont();
 					if (auto section = resource_info->getSection(section_no))
@@ -446,7 +451,7 @@ void Main()
 				resource_render_target.clear(col_mng->getMainBackground());
 				{
 					ScopedRenderTarget2D target{ resource_render_target };
-					const size_t tab_no     = tab_view.getSelectTabNo();
+					const size_t tab_no     = simple_tab->getActiveTabIndex();
 					const size_t section_no = section_table[tab_no];
 					const auto&  tag_no = select_tag_no[section_no - 1];
 					const auto& font = SimpleGUI::GetFont();

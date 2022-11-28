@@ -4,21 +4,36 @@ namespace sip
 {
 	SimpleTab::SimpleTab(const Font& font, const Vec2& pos, const SizeF& tabSize, const Array<String>& items)
 		: TabBase{ font, pos, tabSize, items }
+		, mouse_over_no_{ -1 }
 	{
 	}
 
 	void SimpleTab::update()
 	{
+		mouse_over_no_ = -1;
+		for (size_t i = 0; i < getTabCount(); ++i)
+		{
+			const auto& tab = getTabRect(i);
+			if (tab.mouseOver())
+			{
+				mouse_over_no_ = static_cast<int32>(i);
+			}
+			if (!tab.leftClicked())
+			{
+				continue;
+			}
+			setActiveTabIndex(i);
+			return;
+		}
 	}
 
 	void SimpleTab::draw() const
 	{
-		constexpr double Thickness = 10.0;
 		const double radius = (tab_size_.y * 0.25);
 
 		for (size_t i = 0; i < items_.size(); ++i)
 		{
-			RectF tab = getTabRect(i).movedBy(pos_);
+			RectF tab = getTabRect(i);
 
 			ColorF base_color = Palette::Lightgray;
 			Vec2 topleft{ -2, -2 };
@@ -28,7 +43,7 @@ namespace sip
 			{
 				std::swap(bottomright, topleft);
 			}
-			if (tab.mouseOver())
+			if (i == mouse_over_no_)
 			{
 				base_color = Palette::Gainsboro;
 			}
@@ -41,7 +56,7 @@ namespace sip
 
 		for (size_t i = 0; i < items_.size(); ++i)
 		{
-			const RectF tab = getTabRect(i).movedBy(pos_);
+			const RectF tab = getTabRect(i);
 
 			font_(items_[i])
 				.drawAt(
@@ -53,7 +68,7 @@ namespace sip
 	const RectF SimpleTab::getTabRect(size_t index) const noexcept
 	{
 		constexpr double Thickness = 10.0;
-		const RectF tab{ (index * (tab_size_.x + Thickness)), 0.0, tab_size_ };
+		const RectF tab{ (index * (tab_size_.x + Thickness)) + pos_.x, pos_.y, tab_size_ };
 		return tab;
 	}
 }

@@ -303,9 +303,6 @@
     <ClCompile Include="ComboBox\SimpleComboBox.cpp">
       <Filter>Source Files\ComboBox</Filter>
     </ClCompile>
-    <ClCompile Include="Part\TabView.cpp">
-      <Filter>Source Files\Part</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">
@@ -1078,9 +1075,6 @@
     </ClInclude>
     <ClInclude Include="ComboBox\SimpleComboBox.h">
       <Filter>Header Files\ComboBox</Filter>
-    </ClInclude>
-    <ClInclude Include="Part\TabView.h">
-      <Filter>Header Files\Part</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
