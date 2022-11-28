@@ -130,6 +130,7 @@
     <ClCompile Include="FilterTreeView.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MenuFunc.cpp" />
+    <ClCompile Include="Part\TagView.cpp" />
     <ClCompile Include="ResourceInfo\DefineResourceData.cpp" />
     <ClCompile Include="ResourceInfo\ResourceData.cpp" />
     <ClCompile Include="ResourceInfo\ResourceFactory.cpp" />
@@ -370,6 +371,7 @@
     <ClInclude Include="Dialog\RegistResourceDialog.h" />
     <ClInclude Include="FilterTreeView.h" />
     <ClInclude Include="MenuFunc.h" />
+    <ClInclude Include="Part\TagView.h" />
     <ClInclude Include="ResourceInfo\DefineResourceData.h" />
     <ClInclude Include="ResourceInfo\ResourceData.h" />
     <ClInclude Include="ResourceInfo\ResourceDefine.h" />
