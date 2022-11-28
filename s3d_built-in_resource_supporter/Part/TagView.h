@@ -3,6 +3,7 @@
 #define SIP_TAG_VIEW_H_
 
 #include <Siv3D.hpp>
+#include "../ToolDefine.h"
 
 namespace sip
 {
@@ -11,23 +12,10 @@ namespace sip
 	{
 	public:
 
-		/// @brief 
-		struct PageParam
-		{
-			/// @brief 
-			double scroll{ 0.0 };
-
-			/// @brief 
-			SizeF page_size{ 0.0, 0.0 };
-
-			/// @brief 
-			Optional<size_t> select_no{ none };
-		};
-
-	public:
-
-		/// @brief 
-		explicit TagView(const RectF& render_rect) noexcept;
+		/// @brief
+		/// @param render_rect 
+		/// @param tab_no 
+		explicit TagView(const RectF& render_rect, size_t* tab_no, Array<PageParam*> params) noexcept;
 
 		/// @brief 
 		~TagView() noexcept;
@@ -47,7 +35,7 @@ namespace sip
 		RectF render_rect_;
 
 		/// @brief 
-		PageParam page_params_[2];
+		Array<PageParam*> page_param_ptr_;
 
 		/// @brief 
 		size_t* select_tab_no_ptr_;

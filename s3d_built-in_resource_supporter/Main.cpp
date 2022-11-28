@@ -12,59 +12,15 @@
 # include "ResourceInfo/ResourceSection.h"
 # include "ResourceInfo/ResourceTag.h"
 # include "ResourceInfo/ResourceData.h"
+# include "ToolDefine.h"
+# include "Part/TagView.h"
 
 using namespace sip;
 
 namespace sip
 {
-	enum class MenuItemName
-	{
-		File,
-		Edit,
-		Help,
-
-		MAX,
-	};
-	constexpr size_t menu_item_name_count = static_cast<size_t>(MenuItemName::MAX);
-
 	/// @brief 
-	struct MenuItem
-	{
-		/// @brief 
-		String name;
-
-		/// @brief 
-		Array<String> items;
-
-		/// @brief 
-		Array<std::function<bool()>> funcs;
-
-		/// @brief 
-		Array<std::function<bool()>> enable_funcs;
-
-	} static const menu_item_table[] =
-	{
-		{
-			U"file",
-			{ U"open", U"save", U"close" },
-			{ MenuFunc::fileOpen, MenuFunc::fileSave, MenuFunc::fileClose },
-			{ []() { return true; }, MenuEnableFunc::isOpen, MenuEnableFunc::isOpen }
-		},
-
-		{
-			U"edit",
-			{ U"undo", U"redo", U"regist resource" },
-			{ MenuFunc::undo, MenuFunc::redo, MenuFunc::registResource },
-			{ MenuEnableFunc::existExecCommand, MenuEnableFunc::existUndoCommand, MenuEnableFunc::isOpen }
-		},
-
-		{
-			U"help",
-			{ U"license view on webpage" },
-			{ []() { LicenseManager::ShowInBrowser(); return true; } },
-			{ []() { return true; } }
-		},
-	};
+	const size_t section_table[2] = { 2, 1 };
 
 	void drawDotRect(const RectF& rect)
 	{
@@ -141,10 +97,13 @@ void Main()
 	RectF   open_file_rect{ 680, 60, 30, 30 };
 	Texture open_file_texture{ U"📂"_emoji };
 
+	// データ
+	PageParam page_params[2];
+
 	// タブ
 	Array<String> tab_items = { U"User", U"Engine" };
 	TabPtr simple_tab(new SimpleTab(SimpleGUI::GetFont(), Vec2{ 100, 110 }, Size{ 100, 30 }, tab_items));
-	constexpr size_t section_table[] = { 2, 1 };
+	size_t select_tab_no = 0;
 
 	// タグ
 	Optional<size_t> select_tag_no[] = { none, none };
@@ -152,9 +111,11 @@ void Main()
 		simple_tab->getPos().x, simple_tab->getPos().y + simple_tab->getTabRect(0).h + 10,
 		200, 400
 	};
-	Vec2 tag_scroll[] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
-	RenderTexture tag_render_target((uint32)tag_render_rect.w, (uint32)tag_render_rect.h);
-	SizeF tag_page_size[] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
+	TagView tag_view{
+		tag_render_rect,
+		&select_tab_no,
+		{ &(page_params[0]), &(page_params[1]) }
+	};
 
 	// リソース
 	Optional<size_t> select_resource_no[] = { none, none };
@@ -239,41 +200,11 @@ void Main()
 			if (simple_tab)
 			{
 				simple_tab->update();
+				select_tab_no = simple_tab->getActiveTabIndex();
 			}
 
 			// タグの選択
-			if (resource_info)
-			{
-				const auto tab_no     = simple_tab->getActiveTabIndex();
-				const auto section_no = section_table[tab_no];
-				const auto& font = SimpleGUI::GetFont();
-				if (auto section = resource_info->getSection(section_no))
-				{
-					double offset_y = 10 - tag_scroll[section_no - 1].y + tag_render_rect.y;
-					const auto& tags = section->getTags();
-					for (size_t i = 0; i < tags.size(); ++i)
-					{
-						auto select_rect = font(tags[i]->getName())
-							.region(tag_render_rect.x + 10, offset_y);
-						select_rect.w = tag_render_rect.w - 20;
-						if (select_rect.leftClicked())
-						{
-							select_tag_no[section_no - 1] = i;
-							select_resource_no[section_no - 1] = none;
-							break;
-						}
-						offset_y += 35;
-					}
-					tag_page_size[section_no - 1].y = tags.size() * 35.0 + 20.0;
-				}
-				if (tag_render_rect.mouseOver())
-				{
-					tag_scroll[section_no - 1].y += Mouse::Wheel() * 8;
-
-					auto scroll_max = tag_page_size[section_no - 1].y - tag_render_rect.h;
-					tag_scroll[section_no - 1].y = Clamp(tag_scroll[section_no - 1].y, 0.0, Max(scroll_max, 0.0));
-				}
-			}
+			tag_view.update();
 
 			// ファイル名のみ表示切り替え
 			if (getToggleEnableRect(resource_render_rect.pos - Vec2{ -20, 35 }, 26).leftClicked())
@@ -403,39 +334,7 @@ void Main()
 			}
 
 			// タグの描画
-			if (resource_info)
-			{
-				tag_render_target.clear(col_mng->getMainBackground());
-				{
-					ScopedRenderTarget2D target{ tag_render_target };
-					const size_t tab_no     = simple_tab->getActiveTabIndex();
-					const size_t section_no = section_table[tab_no];
-					const auto& font = SimpleGUI::GetFont();
-					if (auto section = resource_info->getSection(section_no))
-					{
-						double offset_y = 10 - tag_scroll[section_no - 1].y;
-						const auto& tags = section->getTags();
-						for (size_t i = 0; i < tags.size(); ++i)
-						{
-							font(tags[i]->getName()).draw(10, offset_y, Palette::Dimgray);
-							if (select_tag_no[section_no - 1].has_value()
-								&& i == select_tag_no[section_no - 1].value())
-							{
-								auto select_rect = font(tags[i]->getName())
-									.region(10, offset_y).stretched(2, 0);
-								select_rect.w = Max(select_rect.w, tag_render_rect.w - 20);
-								sip::drawDotRect(select_rect);
-							}
-							offset_y += 35;
-						}
-					}
-				}
-				tag_render_rect.rounded(5.0)
-					.drawShadow({ -3, -3 }, 5.0, 0.0, Palette::Darkgray)
-					.drawShadow({  3,  3 }, 5.0, 0.0, Palette::Whitesmoke)
-					.draw(col_mng->getMainBackground());
-				tag_render_target.draw(tag_render_rect.pos);
-			}
+			tag_view.draw();
 
 			// ファイル名のみ表示切り替えボタン描画
 			auto toggle_file_name_rect = drawEnable(

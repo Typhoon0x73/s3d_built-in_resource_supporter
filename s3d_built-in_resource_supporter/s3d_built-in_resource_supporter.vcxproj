@@ -390,6 +390,7 @@
     <ClInclude Include="ThemeColor\ThemeColorLight.h" />
     <ClInclude Include="ThemeColor\ThemeColorManager.h" />
     <ClInclude Include="ThemeColor\ThemeDefine.h" />
+    <ClInclude Include="ToolDefine.h" />
     <ClInclude Include="WindowInfo.h" />
     <ClInclude Include="XMLInfo\EditFilters.h" />
     <ClInclude Include="XMLInfo\EditVcxproj.h" />

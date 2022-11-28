@@ -1082,5 +1082,8 @@
     <ClInclude Include="Part\TagView.h">
       <Filter>Header Files\Part</Filter>
     </ClInclude>
+    <ClInclude Include="ToolDefine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
