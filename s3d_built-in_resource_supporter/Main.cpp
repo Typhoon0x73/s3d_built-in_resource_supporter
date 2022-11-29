@@ -99,6 +99,7 @@ void Main()
 
 	// データ
 	PageListParam tag_page_list_params[2];
+	Array<PageListParam> resource_page_list_params[2];
 
 	// タブ
 	Array<String> tab_items = { U"User", U"Engine" };

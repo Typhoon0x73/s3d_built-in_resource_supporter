@@ -306,6 +306,9 @@
     <ClCompile Include="Part\TagView.cpp">
       <Filter>Source Files\Part</Filter>
     </ClCompile>
+    <ClCompile Include="Part\ResourceView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">
@@ -1083,6 +1086,9 @@
       <Filter>Header Files\Part</Filter>
     </ClInclude>
     <ClInclude Include="ToolDefine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Part\ResourceView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
