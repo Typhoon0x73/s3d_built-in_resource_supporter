@@ -98,7 +98,7 @@ void Main()
 	Texture open_file_texture{ U"📂"_emoji };
 
 	// データ
-	PageParam page_params[2];
+	PageListParam tag_page_list_params[2];
 
 	// タブ
 	Array<String> tab_items = { U"User", U"Engine" };
@@ -114,7 +114,7 @@ void Main()
 	TagView tag_view{
 		tag_render_rect,
 		&select_tab_no,
-		{ &(page_params[0]), &(page_params[1]) }
+		{ &(tag_page_list_params[0]), &(tag_page_list_params[1]) }
 	};
 
 	// リソース

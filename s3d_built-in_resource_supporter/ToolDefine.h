@@ -11,7 +11,7 @@ namespace sip
 	extern const size_t section_table[2];
 
 	/// @brief 
-	struct PageParam
+	struct PageListParam
 	{
 		/// @brief 
 		Vec2 scroll{ 0.0, 0.0 };
@@ -20,10 +20,7 @@ namespace sip
 		SizeF page_size{ 0.0, 0.0 };
 
 		/// @brief 
-		Optional<size_t> select_tag_no{ none };
-
-		/// @brief 
-		Optional<size_t> select_resource_no{ none };
+		Optional<size_t> select_no{ none };
 	};
 
 	/// @brief 

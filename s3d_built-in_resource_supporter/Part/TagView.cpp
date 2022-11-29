@@ -9,10 +9,10 @@
 
 namespace sip
 {
-	TagView::TagView(const RectF& render_rect, size_t* tab_no, Array<PageParam*> params) noexcept
+	TagView::TagView(const RectF& render_rect, size_t* tab_no, Array<PageListParam*> params) noexcept
 		: render_rect_{ render_rect }
 		, render_texture_{ static_cast<int32>(render_rect.w), static_cast<int32>(render_rect.h) }
-		, page_param_ptr_{ params }
+		, page_list_param_ptr_{ params }
 		, select_tab_no_ptr_{ tab_no }
 	{
 	}
@@ -45,7 +45,7 @@ namespace sip
 		constexpr double padding = 10.0;
 		const double item_h = font.fontSize() + padding * 1.5;
 		const auto index = section_no - 1;
-		PageParam* param = page_param_ptr_[index];
+		PageListParam* param = page_list_param_ptr_[index];
 		double offset_y  = padding - param->scroll.y + render_rect_.y;
 		const auto& tags = section->getTags();
 		for (size_t i = 0; i < tags.size(); ++i)
@@ -55,8 +55,7 @@ namespace sip
 			select_rect.w = Max(select_rect.w, render_rect_.w - padding * 2.0);
 			if (render_rect_.mouseOver() && select_rect.leftClicked())
 			{
-				param->select_tag_no = i;
-				param->select_resource_no = none;
+				param->select_no = i;
 				break;
 			}
 			offset_y += item_h;
@@ -104,7 +103,7 @@ namespace sip
 		const auto  section_no = section_table[tab_no];
 		const auto& font = SimpleGUI::GetFont();
 		const auto index = section_no - 1;
-		PageParam* param = page_param_ptr_[index];
+		PageListParam* param = page_list_param_ptr_[index];
 		constexpr double padding = 10.0;
 		const double item_h = font.fontSize() + padding * 1.5;
 
@@ -122,8 +121,8 @@ namespace sip
 			for (size_t i = 0; i < tags.size(); ++i)
 			{
 				font(tags[i]->getName()).draw(padding - param->scroll.x, offset_y, Palette::Dimgray);
-				if (param->select_tag_no.has_value()
-					&& i == param->select_tag_no.value())
+				if (param->select_no.has_value()
+					&& i == param->select_no.value())
 				{
 					auto select_rect = font(tags[i]->getName())
 						.region(padding - param->scroll.x, offset_y).stretched(2, 0);

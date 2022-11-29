@@ -15,7 +15,7 @@ namespace sip
 		/// @brief
 		/// @param render_rect 
 		/// @param tab_no 
-		explicit TagView(const RectF& render_rect, size_t* tab_no, Array<PageParam*> params) noexcept;
+		explicit TagView(const RectF& render_rect, size_t* tab_no, Array<PageListParam*> params) noexcept;
 
 		/// @brief 
 		~TagView() noexcept;
@@ -35,7 +35,7 @@ namespace sip
 		RectF render_rect_;
 
 		/// @brief 
-		Array<PageParam*> page_param_ptr_;
+		Array<PageListParam*> page_list_param_ptr_;
 
 		/// @brief 
 		size_t* select_tab_no_ptr_;
