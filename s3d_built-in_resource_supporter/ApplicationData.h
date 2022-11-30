@@ -3,6 +3,7 @@
 #define SIP_APPLICATION_DATA_H_
 
 #include <Siv3D.hpp>
+#include "ToolDefine.h"
 
 namespace sip
 {
@@ -63,6 +64,12 @@ namespace sip
 
 		/// @brief 
 		std::unique_ptr<FilePath> resource_path_;
+
+		/// @brief 
+		std::unique_ptr<TagParams> tag_page_list_params_;
+
+		/// @brief 
+		std::unique_ptr<ResourceParams> resource_page_list_params_;
 	};
 }
 

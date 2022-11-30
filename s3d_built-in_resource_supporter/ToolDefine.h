@@ -22,6 +22,8 @@ namespace sip
 		/// @brief 
 		Optional<size_t> select_no{ none };
 	};
+	using TagParams      = Array<PageListParam>;
+	using ResourceParams = Array<TagParams>;
 
 	/// @brief 
 	enum class MenuItemName

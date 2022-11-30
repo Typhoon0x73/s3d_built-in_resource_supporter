@@ -25,6 +25,8 @@ namespace sip
 		, relative_path_{ new FilePath() }
 		, vcxproj_path_{ new FilePath() }
 		, resource_path_{ new FilePath() }
+		, tag_page_list_params_{ new TagParams() }
+		, resource_page_list_params_{ new ResourceParams() }
 	{
 		// ウィンドウ情報を登録
 		g_pGetBlackboard(WindowInfo* const)->insert("window_info", window_info_.get());
@@ -36,14 +38,23 @@ namespace sip
 		g_pGetBlackboard(DialogManager*     const)->insert("dialog_manager"     , dialog_manager_.get());
 
 		// XML/Resourceデータの登録
-		g_pGetBlackboard(XMLInfo*      const)->insert("vcxproj_info" , vcxproj_info_.get());
-		g_pGetBlackboard(XMLInfo*      const)->insert("filters_info" , filters_info_.get());
-		g_pGetBlackboard(EditVcxproj*  const)->insert("edit_vcxproj" , edit_vcxproj_.get());
-		g_pGetBlackboard(EditFilters*  const)->insert("edit_filters" , edit_filters_.get());
-		g_pGetBlackboard(ResourceInfo* const)->insert("resource_info", resource_info_.get());
-		g_pGetBlackboard(FilePath*     const)->insert("relative_path", relative_path_.get());
-		g_pGetBlackboard(FilePath*     const)->insert("vcxproj_path" , vcxproj_path_.get());
-		g_pGetBlackboard(FilePath*     const)->insert("resource_path", resource_path_.get());
+		g_pGetBlackboard(XMLInfo*        const)->insert("vcxproj_info" , vcxproj_info_.get());
+		g_pGetBlackboard(XMLInfo*        const)->insert("filters_info" , filters_info_.get());
+		g_pGetBlackboard(EditVcxproj*    const)->insert("edit_vcxproj" , edit_vcxproj_.get());
+		g_pGetBlackboard(EditFilters*    const)->insert("edit_filters" , edit_filters_.get());
+		g_pGetBlackboard(ResourceInfo*   const)->insert("resource_info", resource_info_.get());
+		g_pGetBlackboard(FilePath*       const)->insert("relative_path", relative_path_.get());
+		g_pGetBlackboard(FilePath*       const)->insert("vcxproj_path" , vcxproj_path_.get());
+		g_pGetBlackboard(FilePath*       const)->insert("resource_path", resource_path_.get());
+		g_pGetBlackboard(TagParams*      const)->insert("tag_page_list_params"     , tag_page_list_params_.get());
+		g_pGetBlackboard(ResourceParams* const)->insert("resource_page_list_params", resource_page_list_params_.get());
+
+		// 初期化
+		for (size_t i = 0; i < 2; i++)
+		{
+			tag_page_list_params_->emplace_back(PageListParam());
+			resource_page_list_params_->emplace_back(Array<PageListParam>());
+		}
 	}
 
 	ApplicationData::~ApplicationData() noexcept
@@ -51,6 +62,8 @@ namespace sip
 		// 解放
 		FileSystem::ChangeCurrentDirectory(FileSystem::InitialDirectory());
 		assert(SaveSettingsINI(U"settings.ini"));
+		g_BlackboardRelease(ResourceParams* const);
+		g_BlackboardRelease(TagParams* const);
 		g_BlackboardRelease(FilePath* const);
 		g_BlackboardRelease(ResourceInfo* const);
 		g_BlackboardRelease(EditFilters* const);

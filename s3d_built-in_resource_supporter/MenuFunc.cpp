@@ -12,11 +12,6 @@
 
 namespace sip
 {
-	bool createPageListParam()
-	{
-
-	}
-
 	bool MenuFunc::fileOpen() noexcept
 	{
 		auto open_path = Dialog::OpenFile({ { U"プロジェクトファイル", { U"vcxproj" } } });

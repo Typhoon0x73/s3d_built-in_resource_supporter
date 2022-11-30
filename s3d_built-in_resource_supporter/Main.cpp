@@ -97,10 +97,6 @@ void Main()
 	RectF   open_file_rect{ 680, 60, 30, 30 };
 	Texture open_file_texture{ U"📂"_emoji };
 
-	// データ
-	PageListParam tag_page_list_params[2];
-	Array<PageListParam> resource_page_list_params[2];
-
 	// タブ
 	Array<String> tab_items = { U"User", U"Engine" };
 	TabPtr simple_tab(new SimpleTab(SimpleGUI::GetFont(), Vec2{ 100, 110 }, Size{ 100, 30 }, tab_items));
@@ -115,7 +111,6 @@ void Main()
 	TagView tag_view{
 		tag_render_rect,
 		&select_tab_no,
-		{ &(tag_page_list_params[0]), &(tag_page_list_params[1]) }
 	};
 
 	// リソース
