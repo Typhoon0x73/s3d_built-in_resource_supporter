@@ -307,7 +307,7 @@
       <Filter>Source Files\Part</Filter>
     </ClCompile>
     <ClCompile Include="Part\ResourceView.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Part</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1058,9 +1058,6 @@
     <ClInclude Include="ApplicationData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FilterTreeView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MenuFunc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1089,6 +1086,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Part\ResourceView.h">
+      <Filter>Header Files\Part</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterTreeView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
