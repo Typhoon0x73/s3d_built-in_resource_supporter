@@ -32,7 +32,7 @@ namespace sip
 
 	void TabBase::setActiveTabIndex(size_t index) noexcept
 	{
-		assert(index < items_.size());
+		SASSERT(index < items_.size());
 		active_index_ = index;
 	}
 
@@ -49,7 +49,7 @@ namespace sip
 	void TabBase::advance(int32 offset, bool wrapAround)
 	{
 
-		assert(InRange(offset, -1, 1));
+		SASSERT(InRange(offset, -1, 1));
 
 		if (offset == -1)
 		{
