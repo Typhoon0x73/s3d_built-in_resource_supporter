@@ -20,7 +20,7 @@ using namespace sip;
 namespace sip
 {
 	/// @brief 
-	const size_t section_table[2] = { 2, 1 };
+	constexpr size_t section_table[2] = { 2, 1 };
 
 	void drawDotRect(const RectF& rect)
 	{
