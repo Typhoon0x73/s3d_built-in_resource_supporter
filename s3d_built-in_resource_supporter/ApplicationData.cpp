@@ -53,7 +53,7 @@ namespace sip
 		for (size_t i = 0; i < 2; i++)
 		{
 			tag_page_list_params_->emplace_back(PageListParam());
-			resource_page_list_params_->emplace_back(Array<PageListParam>());
+			resource_page_list_params_->emplace_back(TagParams());
 		}
 	}
 
