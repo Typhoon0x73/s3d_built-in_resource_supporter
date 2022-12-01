@@ -27,6 +27,8 @@ namespace sip
 		RectF render_rect_;
 
 		RectF toggle_render_rect_;
+
+		bool* is_only_file_name_;
 	};
 }
 
