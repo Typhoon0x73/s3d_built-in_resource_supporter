@@ -12,22 +12,44 @@ namespace sip
 	{
 	public:
 
-		explicit ResourceView() noexcept;
+		/// @brief 
+		/// @param rect 
+		/// @param tab_no 
+		explicit ResourceView(const RectF& rect, size_t* tab_no) noexcept;
 
+		/// @brief 
 		~ResourceView() noexcept;
 
+		/// @brief 
 		void update() noexcept;
 
-		void draw() noexcept;
+		/// @brief 
+		void draw() const noexcept;
 
 	private:
 
+		/// @brief 
 		RectF regist_button_rect_;
 
+		/// @brief 
 		RectF render_rect_;
 
+		/// @brief 
 		RectF toggle_render_rect_;
 
+		/// @brief 
+		RenderTexture resource_render_target_;
+
+		/// @brief 
+		RenderTexture toggle_render_target_;
+
+		/// @brief 
+		ResourceParams* page_list_param_ptr_;
+
+		/// @brief 
+		size_t* select_tag_;
+
+		/// @brief 
 		bool* is_only_file_name_;
 	};
 }

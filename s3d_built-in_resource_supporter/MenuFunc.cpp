@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "MenuFunc.h"
+#include "ToolDefine.h"
 #include "ResourceInfo/ResourceInfo.h"
+#include "ResourceInfo/ResourceSection.h"
 #include "XMLInfo/XMLInfo.h"
 #include "XMLInfo/XMLData.h"
 #include "XMLInfo/EditVcxproj.h"
@@ -28,6 +30,7 @@ namespace sip
 		auto relative_path = g_pGetBlackboard(FilePath*     const)->get("relative_path");
 		auto vcxproj_path  = g_pGetBlackboard(FilePath*     const)->get("vcxproj_path");
 		auto resource_path = g_pGetBlackboard(FilePath*     const)->get("resource_path");
+		auto resource_page = g_pGetBlackboard(ResourceParams* const)->get("resource_page_list_params");
 		if (
 			resource_info == nullptr
 			|| vcxproj_info == nullptr
@@ -37,6 +40,7 @@ namespace sip
 			|| relative_path == nullptr
 			|| vcxproj_path == nullptr
 			|| resource_path == nullptr
+			|| resource_page == nullptr
 			)
 		{
 			Logger << U"アプリケーションデータが正常に取得できませんでした。\n";
@@ -55,7 +59,25 @@ namespace sip
 		*resource_path = FileSystem::FullPath(edit_vcxproj->getResourcePath());
 		*relative_path = FileSystem::RelativePath(FileSystem::ParentPath(*resource_path)).replaced(U'/', U'\\');
 		FileSystem::ChangeCurrentDirectory(FileSystem::ParentPath(*resource_path));
-		return resource_info->open(*resource_path);
+		if (!resource_info->open(*resource_path))
+		{
+			return false;
+		}
+		for (size_t k : step(2))
+		{
+			auto section = resource_info->getSection(section_table[k]);
+			if (section == nullptr)
+			{
+				continue;
+			}
+			(*resource_page)[k].clear();
+			(*resource_page)[k].reserve(section->getTagSize());
+			for (size_t i : step(section->getTagSize()))
+			{
+				(*resource_page)[k].emplace_back(PageListParam());
+			}
+		}
+		return true;
 	}
 
 	bool MenuFunc::fileSave() noexcept
