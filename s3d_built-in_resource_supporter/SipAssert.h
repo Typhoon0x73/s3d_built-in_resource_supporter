@@ -4,13 +4,16 @@
 
 #include <Siv3D.hpp>
 
-namespace sip
-{
-
 #ifdef _WINDOWS
 #include <Windows.h>
 #include <consoleapi2.h>
 #include <consoleapi3.h>
+#endif
+
+namespace sip
+{
+
+#ifdef _WINDOWS
 
 	static inline void ChangeConsoleColorRed(void)
 	{
@@ -30,8 +33,9 @@ namespace sip
 	static inline int soft_assert(const char* filename, int line)
 	{
 		ChangeConsoleColorRed();
-		Console << ("#################### !! ASSERT !! ####################");
-		Console << (U"file : {} ( line : {} )"_fmt(filename, line));
+		String fmt = U"#################### !! ASSERT !! ####################\n"
+					 U" file : {} ( line : {} )"_fmt(Unicode::Widen(filename), line);
+		Console << fmt;
 		ChangeConsoleColorWhite();
 		__debugbreak();
 		return 1;
@@ -41,8 +45,9 @@ namespace sip
 
 	static inline int soft_assert(const char*, int)
 	{
-		Console << ("#################### !! ASSERT !! ####################");
-		Console << (U"file : {} ( line : {} )"_fmt(filename, line));
+		String fmt = U"#################### !! ASSERT !! ####################\n"
+					 U" file : {} ( line : {} )"_fmt(Unicode::Widen(filename), line);
+		Console << fmt;
 		for (;;) { NULL; }
 		return 1;
 	}
@@ -51,6 +56,10 @@ namespace sip
 
 }
 
+#ifdef _DEBUG
 #define SASSERT(b) (!!(b) || (soft_assert(__FILE__, __LINE__)))
+#else //_DEBUG
+#define SASSERT(b) (!!(b))
+#endif //_DEBUG
 
 #endif // !SIP_ASSERT_H_
