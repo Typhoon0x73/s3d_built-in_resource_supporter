@@ -61,14 +61,7 @@ namespace sip
 		{
 			if (it.name.compare(U"maximized") == 0)
 			{
-				if (it.value.compare(U"true") == 0)
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				return (it.value.compare(U"true") == 0);
 			}
 		}
 		return false;
