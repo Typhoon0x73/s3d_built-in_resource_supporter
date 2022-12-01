@@ -384,6 +384,7 @@
     <ClInclude Include="ResourceInfo\ResourceSection.h" />
     <ClInclude Include="ResourceInfo\ResourceTag.h" />
     <ClInclude Include="SettingsINI.h" />
+    <ClInclude Include="SipAssert.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Tab\ITab.h" />
     <ClInclude Include="Tab\SimpleTab.h" />
