@@ -19,7 +19,7 @@ namespace sip
 		[[nodiscard]] virtual bool update() noexcept = 0;
 
 		/// @brief 
-		virtual void draw() /* const */ noexcept = 0;
+		virtual void draw() const noexcept = 0;
 
 		/// @brief
 		/// @return 

@@ -53,7 +53,7 @@ namespace sip
 		return true;
 	}
 
-	void DialogManager::draw() /* const */ noexcept
+	void DialogManager::draw() const noexcept
 	{
 		if (!existDialog())
 		{

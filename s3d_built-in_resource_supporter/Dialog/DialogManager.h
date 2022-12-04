@@ -28,7 +28,7 @@ namespace sip
 
 		/// @brief 
 		/// @return 
-		void draw() /* const */ noexcept;
+		void draw() const noexcept;
 
 		/// @brief 
 		/// @return 

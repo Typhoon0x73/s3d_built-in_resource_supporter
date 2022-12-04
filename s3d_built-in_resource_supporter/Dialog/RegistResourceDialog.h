@@ -47,7 +47,7 @@ namespace sip
 		[[nodiscard]] virtual bool update() noexcept override;
 
 		/// @brief 
-		virtual void draw() /* const */ noexcept override;
+		virtual void draw() const noexcept override;
 
 		/// @brief
 		/// @return 
@@ -73,21 +73,6 @@ namespace sip
 
 		/// @brief 
 		EditInfo edit_;
-
-		/// @brief 
-		ListBoxState tag_list_box_state_;
-
-		/// @brief 
-		ListBoxState filter_list_box_state_;
-
-		/// @brief 
-		RectF load_resource_button_region_;
-
-		/// @brief 
-		RectF add_resource_button_region_;
-
-		/// @brief 
-		RectF cancel_resource_button_region_;
 	};
 }
 

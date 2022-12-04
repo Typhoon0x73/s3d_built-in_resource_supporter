@@ -8,6 +8,7 @@
 #include "../XMLInfo/XMLData.h"
 #include "../XMLInfo/XMLElement.h"
 #include "../XMLInfo/XMLAttribute.h"
+#include "../ThemeColor/ThemeColorManager.h"
 #include "../stdafx.h"
 
 namespace sip
@@ -15,11 +16,6 @@ namespace sip
 	RegistResourceDialog::RegistResourceDialog() noexcept
 		: result_{ Result::None }
 		, edit_{}
-		, tag_list_box_state_{}
-		, filter_list_box_state_{}
-		, load_resource_button_region_{ SimpleGUI::ButtonRegion(U"load", { 230, 10 }) }
-		, add_resource_button_region_{ SimpleGUI::ButtonRegion(U"add", { 10, 50 }) }
-		, cancel_resource_button_region_{ SimpleGUI::ButtonRegion(U"cancel", { 100, 50 }) }
 	{
 	}
 
@@ -38,78 +34,6 @@ namespace sip
 			result_ = Result::Failed;
 			return false;
 		}
-		if (load_resource_button_region_.leftClicked())
-		{
-			load_resource();
-		}
-		if (edit_.path.length() && add_resource_button_region_.leftClicked())
-		{
-			RegistResourceCommand::CreateInfo info;
-			info.section    = 2;
-			info.tag        = edit_.tag;
-			info.path       = edit_.path;
-			info.filter     = edit_.filter;
-			info.extensions = edit_.extensions;
-			if (!command_manager->regist(std::make_unique<RegistResourceCommand>(info)))
-			{
-				Logger << U"リソース登録失敗。\n";
-				result_ = Result::Failed;
-			}
-			result_ = Result::Success;
-		}
-		if (cancel_resource_button_region_.leftClicked())
-		{
-			result_ = Result::Cancel;
-		}
-		if (tag_list_box_state_.selectedItemIndex)
-		{
-			if (tag_list_box_state_.items.size() > *tag_list_box_state_.selectedItemIndex)
-			{
-				edit_.tag = tag_list_box_state_.items.at(*tag_list_box_state_.selectedItemIndex);
-			}
-		}
-		if (edit_.path.compare(U"") != 0)
-		{
-			tag_list_box_state_.items.clear();
-			tag_list_box_state_.items.emplace_back(FileSystem::Extension(edit_.path).uppercased());
-			for(const auto& tag : resource_info->getSection(2)->getTags())
-			{
-				if (tag->getName().compare(tag_list_box_state_.items[0]) == 0)
-				{
-					continue;
-				}
-				tag_list_box_state_.items.emplace_back(tag->getName());
-			}
-		}
-		if (filter_list_box_state_.selectedItemIndex)
-		{
-			if (filter_list_box_state_.items.size() > *filter_list_box_state_.selectedItemIndex)
-			{
-				edit_.filter = filter_list_box_state_.items.at(*filter_list_box_state_.selectedItemIndex);
-			}
-		}
-		if (edit_.filter.compare(U"") != 0)
-		{
-			filter_list_box_state_.items.clear();
-			for (const auto& filter : edit_filters->getFilters()->getChildren())
-			{
-				auto elem = filter.second->findElement(U"Filter");
-				if (elem == nullptr)
-				{
-					continue;
-				}
-				auto attrib = elem->findAttribute(U"Include");
-				if (attrib == nullptr)
-				{
-					continue;
-				}
-				if (edit_.filter.compare(attrib->getValue()) == 0)
-				{
-					filter_list_box_state_.selectedItemIndex = filter_list_box_state_.items.size();
-				}
-				filter_list_box_state_.items.emplace_back(attrib->getValue());
-			}
-		}
 		if (result_ != Result::None)
 		{
 			return false;
@@ -117,18 +41,18 @@ namespace sip
 		return true;
 	}
 
-	void RegistResourceDialog::draw() /* const */ noexcept
+	void RegistResourceDialog::draw() const noexcept
 	{
-		TextEditState te_state;
-		te_state.text = edit_.path;
-		SimpleGUI::TextBox(te_state, { 10, 10 }, 200, unspecified, false);
-		SimpleGUI::Button(U"load", load_resource_button_region_.pos);
-		SimpleGUI::Button(U"add", add_resource_button_region_.pos, unspecified, edit_.path.length());
-		SimpleGUI::Button(U"cancel", cancel_resource_button_region_.pos);
-		SimpleGUI::Headline(U"tag"   , {  10, 100 });
-		SimpleGUI::Headline(U"filter", { 200, 100 });
-		SimpleGUI::ListBox(tag_list_box_state_   , {  10, 140 });
-		SimpleGUI::ListBox(filter_list_box_state_, { 200, 140 }, 500);
+		auto col_mng = g_pGetBlackboard(ThemeColorManager* const)->get("theme_color_manager");
+		if (col_mng == nullptr)
+		{
+			return;
+		}
+		RoundRect rect{ 0, 0, Scene::Width() * 0.7, Scene::Height() * 0.6, 10 };
+		rect.setCenter(Scene::CenterF());
+		rect.drawShadow({ -5, -5 }, 10.0, 3.0, Palette::Whitesmoke)
+			.drawShadow({  5,  5 }, 10.0, 3.0, Palette::Darkgray)
+			.draw(col_mng->getMainBackground());
 	}
 
 	bool RegistResourceDialog::isModal() const noexcept
@@ -163,7 +87,7 @@ namespace sip
 		if (edit_.tag.compare(U"") == 0)
 		{
 			edit_.tag = FileSystem::Extension(edit_.path).uppercased();
-			tag_list_box_state_.selectedItemIndex = 0;
+			//tag_list_box_state_.selectedItemIndex = 0;
 		}
 	}
 }
