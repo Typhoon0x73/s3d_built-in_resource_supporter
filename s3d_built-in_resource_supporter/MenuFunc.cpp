@@ -121,13 +121,19 @@ namespace sip
 		auto resource_info = g_pGetBlackboard(ResourceInfo* const)->get("resource_info");
 		auto vcxproj_info = g_pGetBlackboard(XMLInfo* const)->get("vcxproj_info");
 		auto filters_info = g_pGetBlackboard(XMLInfo* const)->get("filters_info");
+		auto vcxproj_path = g_pGetBlackboard(FilePath* const)->get("vcxproj_path");
+		auto resource_path = g_pGetBlackboard(FilePath* const)->get("resource_path");
 		if (resource_info == nullptr
 			|| vcxproj_info == nullptr
+			|| vcxproj_path == nullptr
+			|| resource_path == nullptr
 			|| filters_info == nullptr)
 		{
 			Logger << U"アプリケーションデータが正常に取得できませんでした。\n";
 			return false;
 		}
+		*resource_path = U"";
+		*vcxproj_path = U"";
 		resource_info->clear();
 		vcxproj_info->clear();
 		filters_info->clear();
