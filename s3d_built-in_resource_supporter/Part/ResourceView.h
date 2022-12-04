@@ -14,8 +14,7 @@ namespace sip
 
 		/// @brief 
 		/// @param rect 
-		/// @param tab_no 
-		explicit ResourceView(const RectF& rect, size_t* tab_no) noexcept;
+		explicit ResourceView(const RectF& rect) noexcept;
 
 		/// @brief 
 		~ResourceView() noexcept;
@@ -41,13 +40,13 @@ namespace sip
 		RenderTexture resource_render_target_;
 
 		/// @brief 
-		RenderTexture toggle_render_target_;
+		TagParams* tag_page_list_param_ptr_;
 
 		/// @brief 
 		ResourceParams* page_list_param_ptr_;
 
 		/// @brief 
-		size_t* select_tag_;
+		size_t* select_tab_;
 
 		/// @brief 
 		bool* is_only_file_name_;

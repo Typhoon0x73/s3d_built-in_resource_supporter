@@ -9,11 +9,11 @@
 
 namespace sip
 {
-	TagView::TagView(const RectF& render_rect, size_t* tab_no) noexcept
+	TagView::TagView(const RectF& render_rect) noexcept
 		: render_rect_{ render_rect }
 		, render_texture_{ static_cast<int32>(render_rect.w), static_cast<int32>(render_rect.h) }
 		, page_list_param_ptr_{ g_pGetBlackboard(TagParams* const)->get("tag_page_list_params") }
-		, select_tab_no_ptr_{ tab_no }
+		, select_tab_no_ptr_{ g_pGetBlackboard(size_t* const)->get("select_tab_no") }
 	{
 	}
 
@@ -45,7 +45,7 @@ namespace sip
 		constexpr double padding = 10.0;
 		const double item_h = font.fontSize() + padding * 1.5;
 		const auto index = section_no - 1;
-		PageListParam& param = (*page_list_param_ptr_)[index];
+		PageListParam& param = (*page_list_param_ptr_)[tab_no];
 		double offset_y  = padding - param.scroll.y + render_rect_.y;
 		const auto& tags = section->getTags();
 		for (size_t i = 0; i < tags.size(); ++i)
@@ -76,7 +76,6 @@ namespace sip
 				auto scroll_max = param.page_size.y - render_rect_.h;
 				param.scroll.y = Clamp(param.scroll.y, 0.0, Max(scroll_max, 0.0));
 			}
-
 		}
 	}
 
@@ -103,7 +102,7 @@ namespace sip
 		const auto  section_no = section_table[tab_no];
 		const auto& font  = SimpleGUI::GetFont();
 		const auto  index = section_no - 1;
-		const auto& param = (*page_list_param_ptr_)[index];
+		const auto& param = (*page_list_param_ptr_)[tab_no];
 		constexpr double padding = 10.0;
 		const double item_h = font.fontSize() + padding * 1.5;
 

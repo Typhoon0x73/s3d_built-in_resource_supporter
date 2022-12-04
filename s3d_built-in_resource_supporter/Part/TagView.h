@@ -15,7 +15,7 @@ namespace sip
 		/// @brief
 		/// @param render_rect 
 		/// @param tab_no 
-		explicit TagView(const RectF& render_rect, size_t* tab_no) noexcept;
+		explicit TagView(const RectF& render_rect) noexcept;
 
 		/// @brief 
 		~TagView() noexcept;

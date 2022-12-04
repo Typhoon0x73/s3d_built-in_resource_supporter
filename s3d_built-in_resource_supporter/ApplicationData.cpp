@@ -27,6 +27,8 @@ namespace sip
 		, resource_path_{ new FilePath() }
 		, tag_page_list_params_{ new TagParams() }
 		, resource_page_list_params_{ new ResourceParams() }
+		, is_only_file_name_{ new bool(false) }
+		, select_tab_no_{ new size_t(0) }
 	{
 		// ウィンドウ情報を登録
 		g_pGetBlackboard(WindowInfo* const)->insert("window_info", window_info_.get());
@@ -48,6 +50,8 @@ namespace sip
 		g_pGetBlackboard(FilePath*       const)->insert("resource_path", resource_path_.get());
 		g_pGetBlackboard(TagParams*      const)->insert("tag_page_list_params"     , tag_page_list_params_.get());
 		g_pGetBlackboard(ResourceParams* const)->insert("resource_page_list_params", resource_page_list_params_.get());
+		g_pGetBlackboard(bool*           const)->insert("is_only_file_name", is_only_file_name_.get());
+		g_pGetBlackboard(size_t*         const)->insert("select_tab_no", select_tab_no_.get());
 
 		// 初期化
 		for (size_t i = 0; i < 2; i++)
@@ -62,6 +66,8 @@ namespace sip
 		// 解放
 		FileSystem::ChangeCurrentDirectory(FileSystem::InitialDirectory());
 		SASSERT(SaveSettingsINI(U"settings.ini"));
+		g_BlackboardRelease(size_t* const);
+		g_BlackboardRelease(bool* const);
 		g_BlackboardRelease(ResourceParams* const);
 		g_BlackboardRelease(TagParams* const);
 		g_BlackboardRelease(FilePath* const);

@@ -17,6 +17,9 @@ namespace sip
 		Vec2 scroll{ 0.0, 0.0 };
 
 		/// @brief 
+		Vec2 scroll_max{ 0.0, 0.0 };
+
+		/// @brief 
 		SizeF page_size{ 0.0, 0.0 };
 
 		/// @brief 
@@ -76,6 +79,8 @@ namespace sip
 	};
 
 	extern void drawDotRect(const RectF& rect);
+	extern RoundRect getToggleEnableRect(const Vec2& pos, double height);
+	extern RoundRect drawEnable(bool enable, const Vec2& pos, double height, const ColorF& active_color, const ColorF& disable_color);
 }
 
 #endif // !SIP_TOOL_DEFINE_H_

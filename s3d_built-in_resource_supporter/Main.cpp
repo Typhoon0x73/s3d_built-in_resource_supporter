@@ -14,6 +14,7 @@
 # include "ResourceInfo/ResourceData.h"
 # include "ToolDefine.h"
 # include "Part/TagView.h"
+# include "Part/ResourceView.h"
 
 using namespace sip;
 
@@ -100,34 +101,22 @@ void Main()
 	// タブ
 	Array<String> tab_items = { U"User", U"Engine" };
 	TabPtr simple_tab(new SimpleTab(SimpleGUI::GetFont(), Vec2{ 100, 110 }, Size{ 100, 30 }, tab_items));
-	size_t select_tab_no = 0;
+	size_t* select_tab_no = g_pGetBlackboard(size_t* const)->get("select_tab_no");
 
 	// タグ
-	Optional<size_t> select_tag_no[] = { none, none };
 	RectF tag_render_rect{
 		simple_tab->getPos().x, simple_tab->getPos().y + simple_tab->getTabRect(0).h + 10,
 		200, 400
 	};
-	TagView tag_view{
-		tag_render_rect,
-		&select_tab_no,
-	};
+	TagView tag_view{ tag_render_rect };
 
 	// リソース
-	Optional<size_t> select_resource_no[] = { none, none };
-	bool is_only_file_name = false;
-	RectF regist_button_rect{ 0, 0, 220, 30 };
+	bool* is_only_file_name = g_pGetBlackboard(bool* const)->get("is_only_file_name");
 	RectF resource_render_rect{
 		tag_render_rect.rightX() + 10, tag_render_rect.y,
 		400, tag_render_rect.h
 	};
-	RectF toggle_render_rect{
-		resource_render_rect.stretched(0, -300, 0, -10)
-	};
-	Vec2 resource_scroll[] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
-	RenderTexture resource_render_target((uint32)resource_render_rect.w, (uint32)resource_render_rect.h);
-	RenderTexture toggle_render_target((uint32)toggle_render_rect.w, (uint32)toggle_render_rect.h);
-	SizeF resource_page_size[] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
+	ResourceView resource_view{ resource_render_rect };
 
 	// ゲームループ
 	while (System::Update())
@@ -196,7 +185,7 @@ void Main()
 			if (simple_tab)
 			{
 				simple_tab->update();
-				select_tab_no = simple_tab->getActiveTabIndex();
+				*select_tab_no = simple_tab->getActiveTabIndex();
 			}
 
 			// タグの選択
@@ -205,77 +194,11 @@ void Main()
 			// ファイル名のみ表示切り替え
 			if (getToggleEnableRect(resource_render_rect.pos - Vec2{ -20, 35 }, 26).leftClicked())
 			{
-				is_only_file_name = !is_only_file_name;
+				*is_only_file_name = !(*is_only_file_name);
 			}
 
 			// リソースの選択
-			if (resource_info)
-			{
-				const auto tab_no     = simple_tab->getActiveTabIndex();
-				const auto section_no = section_table[tab_no];
-				const auto tag_no     = select_tag_no[section_no - 1];
-				const auto& font = SimpleGUI::GetFont();
-				const auto& section = resource_info->getSection(section_no);
-				if (tab_no == 0 && MenuEnableFunc::isOpen())
-				{
-					auto line_y = resource_render_rect.h - (regist_button_rect.h + 20);
-					auto button_rect = regist_button_rect
-						.movedBy((resource_render_rect.w - regist_button_rect.w) * 0.5, line_y + 10.0)
-						.movedBy(resource_render_rect.pos);
-					if (button_rect.leftClicked())
-					{
-						if (!MenuFunc::registResource())
-						{
-
-						}
-					}
-				}
-				if (tag_no && section)
-				{
-					double offset_y = 10 - resource_scroll[section_no - 1].y + resource_render_rect.y;
-					if (const auto& tag = section->getTag(tag_no.value()))
-					{
-						const auto& resources = tag->getResources();
-						for (size_t i = 0; i < resources.size(); ++i)
-						{
-							auto toggle_rect = getToggleEnableRect(Vec2{ 10, offset_y + 6 }, 24).movedBy(resource_render_rect.x, 0);
-							if (toggle_rect.leftClicked())
-							{
-								ToggleEnableCommand::CreateInfo info;
-								info.section = section_no;
-								info.tag = tag->getName();
-								info.index = i;
-								if (!cmd_mng->regist(std::move(std::make_unique<ToggleEnableCommand>(info))))
-								{
-
-								}
-							}
-							FilePath path{ resources[i]->getPath() };
-							if (is_only_file_name)
-							{
-								path = FileSystem::FileName(FileSystem::FullPath(path));
-							}
-							auto select_rect = font(path)
-								.region(resource_render_rect.x + 65, offset_y);
-							select_rect.w = resource_render_rect.w - 70;
-							if (select_rect.leftClicked())
-							{
-								select_resource_no[section_no - 1] = i;
-								break;
-							}
-							offset_y += 35;
-						}
-						resource_page_size[section_no - 1].y = resources.size() * 35 + 20 + regist_button_rect.h + 20;
-					}
-				}
-				if (resource_render_rect.mouseOver())
-				{
-					resource_scroll[section_no - 1].y += Mouse::Wheel() * 8;
-
-					auto scroll_max = resource_page_size[section_no - 1].y - resource_render_rect.h;
-					resource_scroll[section_no - 1].y = Clamp(resource_scroll[section_no - 1].y, 0.0, Max(scroll_max, 0.0));
-				}
-			}
+			resource_view.update();
 
 		} while (false);
 
@@ -334,77 +257,14 @@ void Main()
 
 			// ファイル名のみ表示切り替えボタン描画
 			auto toggle_file_name_rect = drawEnable(
-				is_only_file_name, resource_render_rect.pos - Vec2{ -20, 35 }, 26,
+				*is_only_file_name, resource_render_rect.pos - Vec2{ -20, 35 }, 26,
 				Palette::Royalblue, Palette::Silver
 			);
 			SimpleGUI::GetFont()(U"show file name only")
 				.draw(toggle_file_name_rect.rect.tr().x + 5, toggle_file_name_rect.y - 5, Palette::Dimgray);
 
 			// リソースの描画
-			if (resource_info)
-			{
-				resource_render_target.clear(col_mng->getMainBackground());
-				{
-					ScopedRenderTarget2D target{ resource_render_target };
-					const size_t tab_no     = simple_tab->getActiveTabIndex();
-					const size_t section_no = section_table[tab_no];
-					const auto&  tag_no = select_tag_no[section_no - 1];
-					const auto& font = SimpleGUI::GetFont();
-					const auto& section = resource_info->getSection(section_no);
-					if (tag_no && section)
-					{
-						double offset_y = 10 - resource_scroll[section_no - 1].y;
-						const auto& tag = section->getTag(tag_no.value());
-						const auto& resources = tag->getResources();
-						for (size_t i = 0; i < resources.size(); ++i)
-						{
-							bool enable = resources[i]->isEnable();
-							drawEnable(enable, Vec2{ 10, offset_y + 6 }, 24, Palette::Royalblue, Palette::Silver);
-							FilePath path{ resources[i]->getPath() };
-							if (is_only_file_name)
-							{
-								path = FileSystem::FileName(FileSystem::FullPath(path));
-							}
-							font(path).draw(65, offset_y, Palette::Dimgray);
-							if (select_resource_no[section_no - 1].has_value()
-								&& i == select_resource_no[section_no - 1].value())
-							{
-								auto select_rect = font(path)
-									.region(65, offset_y).stretched(2, 0);
-								select_rect.w = Max(select_rect.w, resource_render_rect.w - 70);
-								sip::drawDotRect(select_rect);
-							}
-							offset_y += 35;
-						}
-					}
-					if (tab_no == 0 && MenuEnableFunc::isOpen())
-					{
-						auto line_y = resource_render_rect.h - (regist_button_rect.h + 20);
-						RectF line_rect{ 0, line_y, resource_render_rect.size };
-						line_rect
-							.drawShadow({ 0, -2 }, 5.0, 0.0, Palette::Whitesmoke)
-							.draw(col_mng->getMainBackground());
-						auto button_color =
-							(regist_button_rect
-								.movedBy((resource_render_rect.w - regist_button_rect.w) * 0.5, line_y + 10.0)
-								.movedBy(resource_render_rect.pos).mouseOver()
-							? ColorF{ Palette::Gainsboro } 
-							: col_mng->getMainBackground());
-						auto draw_regist_region = regist_button_rect
-							.movedBy((resource_render_rect.w - regist_button_rect.w) * 0.5, line_y + 10.0)
-							.rounded(5.0)
-							.drawShadow({  3,  3 }, 5.0, 0.0, Palette::Darkgray)
-							.drawShadow({ -3, -3 }, 5.0, 0.0, Palette::Whitesmoke)
-							.draw(button_color);
-						SimpleGUI::GetFont()(U"regist resource").drawAt(draw_regist_region.center(), Palette::Dimgray);
-					}
-				}
-				resource_render_rect.rounded(5.0)
-					.drawShadow({ -3, -3 }, 5.0, 0.0, Palette::Darkgray)
-					.drawShadow({  3,  3 }, 5.0, 0.0, Palette::Whitesmoke)
-					.draw(col_mng->getMainBackground());
-				resource_render_target.draw(resource_render_rect.pos);
-			}
+			resource_view.draw();
 
 			// メニューバーの描画
 			menubar.draw();

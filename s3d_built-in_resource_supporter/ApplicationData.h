@@ -70,6 +70,12 @@ namespace sip
 
 		/// @brief 
 		std::unique_ptr<ResourceParams> resource_page_list_params_;
+
+		/// @brief 
+		std::unique_ptr<bool> is_only_file_name_;
+
+		/// @brief 
+		std::unique_ptr<size_t> select_tab_no_;
 	};
 }
 
