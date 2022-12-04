@@ -16,6 +16,7 @@ namespace sip
 	RegistResourceDialog::RegistResourceDialog() noexcept
 		: result_{ Result::None }
 		, edit_{}
+		, base_rect_{ Arg::center_<RectF::position_type>(Scene::CenterF()), Scene::Size().x * 0.7, Scene::Size().y * 0.6 }
 	{
 	}
 
@@ -48,10 +49,21 @@ namespace sip
 		{
 			return;
 		}
-		RoundRect rect{ 0, 0, Scene::Width() * 0.7, Scene::Height() * 0.6, 10 };
-		rect.setCenter(Scene::CenterF());
-		rect.drawShadow({ -5, -5 }, 10.0, 3.0, Palette::Whitesmoke)
+		base_rect_.rounded(10)
+			.drawShadow({ -5, -5 }, 10.0, 3.0, Palette::Whitesmoke)
 			.drawShadow({  5,  5 }, 10.0, 3.0, Palette::Darkgray)
+			.draw(col_mng->getMainBackground());
+
+		RectF path_rect{ base_rect_.x, base_rect_.y, base_rect_.w * 0.7, 30 };
+		path_rect.movedBy(40, 40).rounded(5)
+			.drawShadow({  1,  1 }, 3.0, 0.0, Palette::Whitesmoke)
+			.drawShadow({ -1, -1 }, 3.0, 0.0, Palette::Darkgray)
+			.draw(col_mng->getMainBackground());
+
+		RectF load_rect{ path_rect.rightX() + 30, base_rect_.y, 30, 30 };
+		load_rect.movedBy(40, 40).rounded(5)
+			.drawShadow({ -1, -1 }, 5.0, 0.0, Palette::Whitesmoke)
+			.drawShadow({  1,  1 }, 5.0, 0.0, Palette::Darkgray)
 			.draw(col_mng->getMainBackground());
 	}
 

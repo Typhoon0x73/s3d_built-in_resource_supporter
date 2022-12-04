@@ -73,6 +73,9 @@ namespace sip
 
 		/// @brief 
 		EditInfo edit_;
+
+		/// @brief 
+		RectF base_rect_;
 	};
 }
 
