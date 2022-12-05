@@ -8,6 +8,7 @@ namespace sip
 	CommandManager::CommandManager()
 		: m_ExecuteList{}
 		, m_UndoList{}
+		, m_FailedList{}
 	{
 	}
 
@@ -28,9 +29,14 @@ namespace sip
 	{
 		if (!command->execute())
 		{
+			m_FailedList.emplace_back(std::move(command));
+			while (m_FailedList.size() > m_Capacity)
+			{
+				m_FailedList.pop_front();
+			}
 			return false;
 		}
-		m_ExecuteList.push_back(std::move(command));
+		m_ExecuteList.emplace_back(std::move(command));
 		m_UndoList.clear();
 		while (m_ExecuteList.size() > m_Capacity)
 		{
@@ -62,9 +68,14 @@ namespace sip
 		m_ExecuteList.pop_back();
 		if (!command->undo())
 		{
+			m_FailedList.emplace_back(std::move(command));
+			while (m_FailedList.size() > m_Capacity)
+			{
+				m_FailedList.pop_front();
+			}
 			return false;
 		}
-		m_UndoList.push_back(std::move(command));
+		m_UndoList.emplace_back(std::move(command));
 		return true;
 	}
 
@@ -82,9 +93,14 @@ namespace sip
 		m_UndoList.pop_back();
 		if (!command->redo())
 		{
+			m_FailedList.emplace_back(std::move(command));
+			while (m_FailedList.size() > m_Capacity)
+			{
+				m_FailedList.pop_front();
+			}
 			return false;
 		}
-		m_ExecuteList.push_back(std::move(command));
+		m_ExecuteList.emplace_back(std::move(command));
 		while (m_ExecuteList.size() > m_Capacity)
 		{
 			m_ExecuteList.pop_front();
@@ -108,6 +124,15 @@ namespace sip
 	const std::list<CommandPtr>& CommandManager::undoList() const
 	{
 		return m_UndoList;
+	}
+
+	/**
+	* @brief 失敗コマンドリストの取得
+	* @return 失敗コマンドリスト
+	*/
+	const std::list<CommandPtr>& CommandManager::failedList() const
+	{
+		return m_FailedList;
 	}
 
 	/**

@@ -1,4 +1,4 @@
-#ifndef SIP_COMMANDMANAGER_H_
+ï»¿#ifndef SIP_COMMANDMANAGER_H_
 #define SIP_COMMANDMANAGER_H_
 
 #include "ICommand.h"
@@ -7,69 +7,76 @@
 namespace sip
 {
 	/**
-	* @brief ƒRƒ}ƒ“ƒhŠÇ—ƒNƒ‰ƒX
+	* @brief ã‚³ãƒãƒ³ãƒ‰ç®¡ç†ã‚¯ãƒ©ã‚¹
 	*/
 	class CommandManager
 	{
 	public:
 
 		/**
-		* @brief ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+		* @brief ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 		*/
 		explicit CommandManager();
 
 		/**
-		* @brief ƒfƒXƒgƒ‰ƒNƒ^
+		* @brief ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 		*/
 		virtual ~CommandManager();
 
 		/**
-		* @brief ƒRƒ}ƒ“ƒh‚Ì“o˜^
-		* @param command ƒRƒ}ƒ“ƒhƒ|ƒCƒ“ƒ^
-		* @return true : ¬Œ÷, false : ¸”s
+		* @brief ã‚³ãƒãƒ³ãƒ‰ã®ç™»éŒ²
+		* @param command ã‚³ãƒãƒ³ãƒ‰ãƒã‚¤ãƒ³ã‚¿
+		* @return true : æˆåŠŸ, false : å¤±æ•—
 		*/
 		bool regist(CommandPtr&& command);
 
 		/**
-		* @brief ƒRƒ}ƒ“ƒh—š—ğ‚Ìíœ
+		* @brief ã‚³ãƒãƒ³ãƒ‰å±¥æ­´ã®å‰Šé™¤
 		*/
 		void clear();
 
 		/**
-		* @brief Œ³‚É–ß‚·
-		* @return true : ¬Œ÷, false : ¸”s
+		* @brief å…ƒã«æˆ»ã™
+		* @return true : æˆåŠŸ, false : å¤±æ•—
 		*/
 		bool undo();
 
 		/**
-		* @brief ‚â‚è’¼‚µ
-		* @return true : ¬Œ÷, false : ¸”s
+		* @brief ã‚„ã‚Šç›´ã—
+		* @return true : æˆåŠŸ, false : å¤±æ•—
 		*/
 		bool redo();
 
 		/**
-		* @brief ÀsƒRƒ}ƒ“ƒhƒŠƒXƒg‚Ìæ“¾
-		* @return ÀsƒRƒ}ƒ“ƒhƒŠƒXƒg
+		* @brief å®Ÿè¡Œã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã®å–å¾—
+		* @return å®Ÿè¡Œã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆ
 		*/
 		const std::list<CommandPtr>& executeList() const;
 
 		/**
-		* @brief Œ³‚É–ß‚·ƒRƒ}ƒ“ƒhƒŠƒXƒg‚Ìæ“¾
-		* @return Œ³‚É–ß‚·ƒRƒ}ƒ“ƒhƒŠƒXƒg
+		* @brief å…ƒã«æˆ»ã™ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã®å–å¾—
+		* @return å…ƒã«æˆ»ã™ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆ
 		*/
 		const std::list<CommandPtr>& undoList() const;
 
 		/**
-		* @brief ƒRƒ}ƒ“ƒh‹L‰¯Å‘å”‚ÌÄİ’è(def:50)
-		* @param capacity ƒRƒ}ƒ“ƒh‹L‰¯Å‘å”
+		* @brief å¤±æ•—ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã®å–å¾—
+		* @return å¤±æ•—ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆ
+		*/
+		const std::list<CommandPtr>& failedList() const;
+
+		/**
+		* @brief ã‚³ãƒãƒ³ãƒ‰è¨˜æ†¶æœ€å¤§æ•°ã®å†è¨­å®š(def:50)
+		* @param capacity ã‚³ãƒãƒ³ãƒ‰è¨˜æ†¶æœ€å¤§æ•°
 		*/
 		void setExecuteCommandCapacity(std::size_t capacity = 50);
 
 	private:
 
-		std::size_t           m_Capacity{ 50 }; //!< ƒRƒ}ƒ“ƒh‹L‰¯Å‘å”
-		std::list<CommandPtr> m_ExecuteList;    //!< ƒRƒ}ƒ“ƒhÀsƒŠƒXƒg
-		std::list<CommandPtr> m_UndoList;       //!< ƒRƒ}ƒ“ƒhŒ³‚É–ß‚·ƒŠƒXƒg
+		std::size_t           m_Capacity{ 50 }; //!< ã‚³ãƒãƒ³ãƒ‰è¨˜æ†¶æœ€å¤§æ•°
+		std::list<CommandPtr> m_ExecuteList;    //!< ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œãƒªã‚¹ãƒˆ
+		std::list<CommandPtr> m_UndoList;       //!< ã‚³ãƒãƒ³ãƒ‰å…ƒã«æˆ»ã™ãƒªã‚¹ãƒˆ
+		std::list<CommandPtr> m_FailedList;     //!< ã‚³ãƒãƒ³ãƒ‰å¤±æ•—ãƒªã‚¹ãƒˆ
 	};
 
 }

@@ -160,7 +160,11 @@ void Main()
 			{
 				if (!MenuFunc::undo())
 				{
-
+					Logger << U"-- failed log --";
+					for (const auto& cmd : cmd_mng->failedList())
+					{
+						Logger << Unicode::Widen(cmd->log());
+					}
 				}
 			}
 			// Ctrl + Y でやり直しコマンド実行
@@ -168,7 +172,11 @@ void Main()
 			{
 				if (!MenuFunc::redo())
 				{
-
+					Logger << U"-- failed log --";
+					for (const auto& cmd : cmd_mng->failedList())
+					{
+						Logger << Unicode::Widen(cmd->log());
+					}
 				}
 			}
 
