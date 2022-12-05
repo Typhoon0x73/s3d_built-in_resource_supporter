@@ -29,6 +29,7 @@ namespace sip
 		, resource_page_list_params_{ new ResourceParams() }
 		, is_only_file_name_{ new bool(false) }
 		, select_tab_no_{ new size_t(0) }
+		, gui_font_{ new Font(FontMethod::MSDF, 20, Typeface::CJK_Regular_JP) }
 	{
 		// ウィンドウ情報を登録
 		g_pGetBlackboard(WindowInfo* const)->insert("window_info", window_info_.get());
@@ -52,6 +53,7 @@ namespace sip
 		g_pGetBlackboard(ResourceParams* const)->insert("resource_page_list_params", resource_page_list_params_.get());
 		g_pGetBlackboard(bool*           const)->insert("is_only_file_name", is_only_file_name_.get());
 		g_pGetBlackboard(size_t*         const)->insert("select_tab_no", select_tab_no_.get());
+		g_pGetBlackboard(Font*           const)->insert("gui_font"     , gui_font_.get());
 
 		// 初期化
 		for (size_t i = 0; i < 2; i++)
@@ -66,6 +68,7 @@ namespace sip
 		// 解放
 		FileSystem::ChangeCurrentDirectory(FileSystem::InitialDirectory());
 		SASSERT(SaveSettingsINI(U"settings.ini"));
+		g_BlackboardRelease(Font* const);
 		g_BlackboardRelease(size_t* const);
 		g_BlackboardRelease(bool* const);
 		g_BlackboardRelease(ResourceParams* const);

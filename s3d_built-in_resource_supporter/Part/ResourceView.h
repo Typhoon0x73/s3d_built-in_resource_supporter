@@ -50,6 +50,9 @@ namespace sip
 
 		/// @brief 
 		bool* is_only_file_name_;
+
+		/// @brief 
+		Font* font_;
 	};
 }
 

@@ -40,6 +40,8 @@ namespace sip
 		/// @brief 
 		size_t* select_tab_no_ptr_;
 
+		/// @brief 
+		Font* gui_font_;
 	};
 }
 

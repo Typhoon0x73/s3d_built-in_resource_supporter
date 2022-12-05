@@ -19,6 +19,7 @@ namespace sip
 		, tag_page_list_param_ptr_{ g_pGetBlackboard(TagParams* const)->get("tag_page_list_params") }
 		, page_list_param_ptr_{ g_pGetBlackboard(ResourceParams* const)->get("resource_page_list_params") }
 		, resource_render_target_{ static_cast<int32>(render_rect_.w), static_cast<int32>(render_rect_.h) }
+		, font_{ g_pGetBlackboard(Font* const)->get("gui_font") }
 	{
 	}
 
@@ -40,7 +41,6 @@ namespace sip
 		const auto  tab_no     = *select_tab_;
 		const auto  section_no = section_table[tab_no];
 		const auto  tag_no     = (*tag_page_list_param_ptr_)[tab_no].select_no;
-		const auto& font       = SimpleGUI::GetFont();
 		const auto& section    = resource_info->getSection(section_no);
 		auto line_y = render_rect_.h - (regist_button_rect_.h + 20);
 		if (tab_no == 0 && MenuEnableFunc::isOpen())
@@ -91,7 +91,7 @@ namespace sip
 				{
 					path = FileSystem::FileName(FileSystem::FullPath(path));
 				}
-				auto select_rect = font(path)
+				auto select_rect = (*font_)(path)
 					.region(render_rect_.x + 65 - scroll.x, offset_y);
 				select_rect.w = render_rect_.w - 70;
 				if (select_rect.leftClicked() && !regist_area.mouseOver())
@@ -100,7 +100,7 @@ namespace sip
 					break;
 				}
 				offset_y += 35;
-				page_param.page_size.x  = Max(page_param.page_size.x, font(path).region().w + 85);
+				page_param.page_size.x  = Max(page_param.page_size.x, (*font_)(path).region().w + 85);
 				page_param.scroll_max.x = page_param.page_size.x - render_rect_.w;
 			}
 			page_param.page_size.y  = resources.size() * 35 + 20 + regist_button_rect_.h + 20;
@@ -138,7 +138,6 @@ namespace sip
 			const auto  tab_no     = *select_tab_;
 			const auto  section_no = section_table[tab_no];
 			const auto& tag_no     = (*tag_page_list_param_ptr_)[tab_no].select_no;
-			const auto& font       = SimpleGUI::GetFont();
 			const auto& section    = resource_info->getSection(section_no);
 			if (tag_no && section)
 			{
@@ -154,10 +153,10 @@ namespace sip
 					{
 						path = FileSystem::FileName(FileSystem::FullPath(path));
 					}
-					font(path).draw(65 - scroll.x, offset_y, Palette::Dimgray);
+					(*font_)(path).draw(65 - scroll.x, offset_y, Palette::Dimgray);
 					if (i == page_param.select_no)
 					{
-						auto select_rect = font(path)
+						auto select_rect = (*font_)(path)
 							.region(65 - scroll.x, offset_y).stretched(2, 0);
 						select_rect.w = Max(select_rect.w, render_rect_.w - 70);
 						sip::drawDotRect(select_rect);

@@ -76,6 +76,9 @@ namespace sip
 
 		/// @brief 
 		std::unique_ptr<size_t> select_tab_no_;
+
+		/// @brief 
+		std::unique_ptr<Font> gui_font_;
 	};
 }
 

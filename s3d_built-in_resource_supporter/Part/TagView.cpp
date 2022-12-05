@@ -14,6 +14,7 @@ namespace sip
 		, render_texture_{ static_cast<int32>(render_rect.w), static_cast<int32>(render_rect.h) }
 		, page_list_param_ptr_{ g_pGetBlackboard(TagParams* const)->get("tag_page_list_params") }
 		, select_tab_no_ptr_{ g_pGetBlackboard(size_t* const)->get("select_tab_no") }
+		, gui_font_{ g_pGetBlackboard(Font* const)->get("gui_font") }
 	{
 	}
 
@@ -36,21 +37,20 @@ namespace sip
 
 		const auto  tab_no     = *select_tab_no_ptr_;
 		const auto  section_no = section_table[tab_no];
-		const auto& font       = SimpleGUI::GetFont();
 		auto section = resource_info->getSection(section_no);
 		if (section == nullptr)
 		{
 			return;
 		}
-		constexpr double padding = 10.0;
-		const double item_h = font.fontSize() + padding * 1.5;
-		const auto index = section_no - 1;
-		PageListParam& param = (*page_list_param_ptr_)[tab_no];
+		const double padding = 10.0;
+		const double item_h  = gui_font_->fontSize() + padding * 1.5;
+		const auto   index   = section_no - 1;
+		auto&  param     = (*page_list_param_ptr_)[tab_no];
 		double offset_y  = padding - param.scroll.y + render_rect_.y;
 		const auto& tags = section->getTags();
-		for (size_t i = 0; i < tags.size(); ++i)
+		for (size_t i : step(tags.size()))
 		{
-			auto font_rect = font(tags[i]->getName()).region();
+			auto font_rect = (*gui_font_)(tags[i]->getName()).region();
 			auto select_rect = font_rect.movedBy(render_rect_.x + padding - param.scroll.x, offset_y);
 			select_rect.w = Max(select_rect.w, render_rect_.w - padding * 2.0);
 			if (render_rect_.mouseOver() && select_rect.leftClicked())
@@ -95,18 +95,16 @@ namespace sip
 
 		render_rect_.rounded(5.0)
 			.drawShadow({ -3, -3 }, 5.0, 0.0, Palette::Darkgray)
-			.drawShadow({ 3,  3 }, 5.0, 0.0, Palette::Whitesmoke)
+			.drawShadow({  3,  3 }, 5.0, 0.0, Palette::Whitesmoke)
 			.draw(col_mng->getMainBackground());
 
-		const auto  tab_no     = *select_tab_no_ptr_;
-		const auto  section_no = section_table[tab_no];
-		const auto& font  = SimpleGUI::GetFont();
-		const auto  index = section_no - 1;
-		const auto& param = (*page_list_param_ptr_)[tab_no];
-		constexpr double padding = 10.0;
-		const double item_h = font.fontSize() + padding * 1.5;
-
-		auto section = resource_info->getSection(section_no);
+		const auto   tab_no     = *select_tab_no_ptr_;
+		const auto   section_no = section_table[tab_no];
+		const auto   index      = section_no - 1;
+		const auto&  param      = (*page_list_param_ptr_)[tab_no];
+		const double padding    = 10.0;
+		const double item_h     = gui_font_->fontSize() + padding * 1.5;
+		const auto&  section    = resource_info->getSection(section_no);
 		if (section == nullptr)
 		{
 			return;
@@ -119,11 +117,11 @@ namespace sip
 			const auto& tags = section->getTags();
 			for (size_t i = 0; i < tags.size(); ++i)
 			{
-				font(tags[i]->getName()).draw(padding - param.scroll.x, offset_y, Palette::Dimgray);
+				(*gui_font_)(tags[i]->getName()).draw(padding - param.scroll.x, offset_y, Palette::Dimgray);
 				if (param.select_no.has_value()
 					&& i == param.select_no.value())
 				{
-					auto select_rect = font(tags[i]->getName())
+					auto select_rect = (*gui_font_)(tags[i]->getName())
 						.region(padding - param.scroll.x, offset_y).stretched(2, 0);
 					select_rect.w = Max(select_rect.w, render_rect_.w - padding * 2.0);
 					sip::drawDotRect(select_rect);
