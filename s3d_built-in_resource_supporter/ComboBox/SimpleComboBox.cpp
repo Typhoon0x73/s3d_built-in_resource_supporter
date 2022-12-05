@@ -3,25 +3,39 @@
 
 namespace sip
 {
-	SimpleComboBox::SimpleComboBox(const Array<String>& items, const Font& font, const Vec2& pos)
+	SimpleComboBox::SimpleComboBox(const Array<String>* items, Font* font, const Vec2& pos, const SizeF& size)
 		: font_{ font }
 		, items_{ items }
 		, index_{ 0 }
 		, padding_{ 6, 2 }
-		, rect_{ pos, 0, (font.height() + padding_.y * 2.0) }
+		, scroll_{ 0.0, 0.0 }
+		, scroll_max_{ 0.0, padding_.y }
+		, rect_{ pos, size.x, ((*font).height() + padding_.y * 2.0) }
+		, pulldown_rect_{ rect_.bl(), size }
 		, down_button_size_{ 16 }
 		, is_open_{ false }
 	{
-		for (const auto& item : items_)
+		for (const auto& item : *items_)
 		{
-			rect_.w = Max(rect_.w, font_(item).region().w);
+			scroll_max_.x = Max(scroll_max_.x, (*font_)(item).region().w + padding_.x * 2);
+			scroll_max_.y += (*font).height() + padding_.y;
 		}
-		rect_.w += (padding_.x * 2 + down_button_size_);
+		if (size.x == 0.0)
+		{
+			rect_.w = scroll_max_.x + down_button_size_;
+			pulldown_rect_.w = rect_.w;
+		}
+		if (size.y == 0.0)
+		{
+			pulldown_rect_.h = scroll_max_.y;
+		}
+		RenderTexture tmp{ static_cast<uint32>(pulldown_rect_.w), static_cast<uint32>(pulldown_rect_.h) };
+		pulldown_render_target_.swap(tmp);
 	}
 
 	bool SimpleComboBox::isEmpty() const noexcept
 	{
-		return items_.isEmpty();
+		return items_->isEmpty();
 	}
 
 	void SimpleComboBox::update()
@@ -36,66 +50,93 @@ namespace sip
 			is_open_ = (not is_open_);
 		}
 
-		Vec2 pos = rect_.pos.movedBy(0, rect_.h);
 
 		if (is_open_)
 		{
-			for (auto i : step(items_.size()))
+			if (pulldown_rect_.mouseOver())
 			{
-				if (const RectF rect{ pos, rect_.w, rect_.h };
-					rect.leftClicked())
+				if (KeyShift.pressed())
 				{
-					Mouse::ClearLRInput();
-					index_ = i;
-					is_open_ = false;
-					break;
+					scroll_.x += Mouse::Wheel() * 8;
 				}
+				else
+				{
+					scroll_.y += Mouse::Wheel() * 8;
+				}
+				Vec2 pos = rect_.pos.movedBy(-scroll_.x, rect_.h - scroll_.y);
+				for (auto i : step(items_->size()))
+				{
+					const RectF rect{ pos, rect_.w, rect_.h };
+					if (rect.leftClicked())
+					{
+						Mouse::ClearLRInput();
+						index_ = i;
+						is_open_ = false;
+						break;
+					}
 
-				pos.y += rect_.h;
+					pos.y += rect_.h;
+				}
 			}
+			scroll_.y = Clamp(scroll_.y, 0.0, scroll_max_.y - pulldown_rect_.h + (padding_.y * (items_->size() + 1)));
+			scroll_.x = Clamp(scroll_.x, 0.0, scroll_max_.x - pulldown_rect_.w + (padding_.x * 2));
 		}
 	}
 
 	void SimpleComboBox::draw() const
 	{
-		rect_.draw();
+		rect_.rounded(5)
+			.drawShadow({ -2, -2 }, 5.0, 0.0, Palette::Whitesmoke)
+			.drawShadow({  2,  2 }, 5.0, 0.0, Palette::Darkgray)
+			.draw(Palette::Lightgray);
 
 		if (isEmpty())
 		{
 			return;
 		}
 
-		rect_.drawFrame(1, 0, is_open_ ? Palette::Orange : Palette::Gray);
+		//rect_.drawFrame(1, 0, is_open_ ? Palette::Orange : Palette::Gray);
 
 		Vec2 pos = rect_.pos;
 
-		font_(items_[index_]).draw(pos + padding_, Palette::Black);
+		(*font_)((*items_)[index_]).draw(
+			RectF{
+				pos + padding_,
+				rect_.size - SizeF{ down_button_size_ + padding_.x, 0.0 }
+			},
+			Palette::Dimgray);
 
 		Triangle{ (rect_.x + rect_.w - down_button_size_ / 2.0 - padding_.x), (rect_.y + rect_.h / 2.0),
-			(down_button_size_ * 0.5), 180_deg }.draw(Palette::Black);
+			(down_button_size_ * 0.5), 180_deg }.draw(Palette::Dimgray);
 
 		pos.y += rect_.h;
 
 		if (is_open_)
 		{
-			const RectF backRect{ pos, rect_.w, (rect_.h * items_.size()) };
-
-			backRect.drawShadow({ 1, 1 }, 4, 1).draw();
-
-			for (const auto& item : items_)
+			pulldown_render_target_.clear(Palette::Lightgray);
 			{
-				if (const RectF rect{ pos, rect_.size };
-					rect.mouseOver())
+				double offset_y = -scroll_.y;
+				ScopedRenderTarget2D target{ pulldown_render_target_ };
+				for (const auto& item : *items_)
 				{
-					rect.draw(Palette::Skyblue);
+					const RectF rect{ 0, offset_y, rect_.size };
+					if (rect.movedBy(pulldown_rect_.pos).mouseOver())
+					{
+						rect.draw(Palette::Skyblue);
+					}
+
+					(*font_)(item).draw((Vec2{ -scroll_.x, offset_y } + padding_), Palette::Dimgray);
+
+					offset_y += rect_.h;
 				}
-
-				font_(item).draw((pos + padding_), Palette::Black);
-
-				pos.y += rect_.h;
 			}
 
-			backRect.drawFrame(1, 0, Palette::Gray);
+			pulldown_render_target_.region().movedBy(pulldown_rect_.asRect().pos)
+				.rounded(5)
+				.drawShadow({  2,  2 }, 5.0, 0.0, Palette::Whitesmoke)
+				.drawShadow({ -2, -2 }, 5.0, 0.0, Palette::Darkgray)
+				.draw(Palette::Lightgray);
+			pulldown_render_target_.draw(pulldown_rect_.pos);
 		}
 	}
 
@@ -120,6 +161,16 @@ namespace sip
 		{
 			return U"";
 		}
-		return items_[index_];
+		return items_->at(index_);
+	}
+
+	void SimpleComboBox::close() noexcept
+	{
+		is_open_ = false;
+	}
+
+	bool SimpleComboBox::isOpen() const noexcept
+	{
+		return is_open_;
 	}
 }

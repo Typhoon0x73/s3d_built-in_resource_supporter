@@ -6,6 +6,7 @@
 # include "Command/ToggleEnableCommand.h"
 # include "ThemeColor/ThemeColorManager.h"
 # include "Dialog/DialogManager.h"
+# include "Dialog/RegistResourceDialog.h"
 # include "MenuFunc.h"
 # include "Tab/SimpleTab.h"
 # include "ResourceInfo/ResourceInfo.h"
@@ -77,6 +78,8 @@ void Main()
 	auto cmd_mng = g_pGetBlackboard(CommandManager*    const)->get("command_manager");
 	auto col_mng = g_pGetBlackboard(ThemeColorManager* const)->get("theme_color_manager");
 	auto dlg_mng = g_pGetBlackboard(DialogManager*     const)->get("dialog_manager");
+
+	//dlg_mng->regist(std::move(std::make_unique<RegistResourceDialog>()));
 
 	// リソースデータ
 	auto resource_info = g_pGetBlackboard(ResourceInfo* const)->get("resource_info");

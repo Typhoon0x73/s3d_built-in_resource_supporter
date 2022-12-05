@@ -9,14 +9,43 @@
 #include "../XMLInfo/XMLElement.h"
 #include "../XMLInfo/XMLAttribute.h"
 #include "../ThemeColor/ThemeColorManager.h"
+#include "../ToolDefine.h"
 #include "../stdafx.h"
 
 namespace sip
 {
+	Array<String> getFilters()
+	{
+		auto guids = g_pGetBlackboard(EditFilters* const)->get("edit_filters")->getGUIDs();
+		Array<String> filters;
+		for (const auto& guid : guids)
+		{
+			filters.emplace_back(guid.first);
+		}
+		return filters;
+	}
+	Array<String> getTags()
+	{
+		auto select_tab    = g_pGetBlackboard(size_t* const)->get("select_tab_no");
+		auto resource_info = g_pGetBlackboard(ResourceInfo* const)->get("resource_info");
+		auto section       = resource_info->getSection(section_table[*select_tab]);
+		Array<String> tags;
+		for (const auto& tag : section->getTags())
+		{
+			tags.emplace_back(tag->getName());
+		}
+		return tags;
+	}
+
 	RegistResourceDialog::RegistResourceDialog() noexcept
 		: result_{ Result::None }
 		, edit_{}
 		, base_rect_{ Arg::center_<RectF::position_type>(Scene::CenterF()), Scene::Size().x * 0.7, Scene::Size().y * 0.6 }
+		, font_{ g_pGetBlackboard(Font* const)->get("gui_font") }
+		, tag_names_{ getTags() }
+		, filter_names_{ getFilters() }
+		, tag_combo_box_{ &tag_names_, font_, { 160, 250 }, { base_rect_.w * 0.7 + 60, 150 } }
+		, filter_combo_box_{ &filter_names_, font_, { 160, 320 }, { base_rect_.w * 0.7 + 60, 150 } }
 	{
 	}
 
@@ -34,6 +63,19 @@ namespace sip
 			Logger << U"マネージャーが正常に取得できませんでした。\n";
 			result_ = Result::Failed;
 			return false;
+		}
+		if (!tag_combo_box_.isOpen())
+		{
+			filter_combo_box_.update();
+		}
+		if (filter_combo_box_.isOpen())
+		{
+			tag_combo_box_.close();
+		}
+		tag_combo_box_.update();
+		if (tag_combo_box_.isOpen())
+		{
+			filter_combo_box_.close();
 		}
 		if (result_ != Result::None)
 		{
@@ -56,15 +98,21 @@ namespace sip
 
 		RectF path_rect{ base_rect_.x, base_rect_.y, base_rect_.w * 0.7, 30 };
 		path_rect.movedBy(40, 40).rounded(5)
-			.drawShadow({  1,  1 }, 3.0, 0.0, Palette::Whitesmoke)
-			.drawShadow({ -1, -1 }, 3.0, 0.0, Palette::Darkgray)
+			.drawShadow({  2,  2 }, 5.0, 0.0, Palette::Whitesmoke)
+			.drawShadow({ -2, -2 }, 5.0, 0.0, Palette::Darkgray)
 			.draw(col_mng->getMainBackground());
 
 		RectF load_rect{ path_rect.rightX() + 30, base_rect_.y, 30, 30 };
 		load_rect.movedBy(40, 40).rounded(5)
-			.drawShadow({ -1, -1 }, 5.0, 0.0, Palette::Whitesmoke)
-			.drawShadow({  1,  1 }, 5.0, 0.0, Palette::Darkgray)
+			.drawShadow({ -2, -2 }, 5.0, 0.0, Palette::Whitesmoke)
+			.drawShadow({  2,  2 }, 5.0, 0.0, Palette::Darkgray)
 			.draw(col_mng->getMainBackground());
+
+		tag_combo_box_.draw();
+		if (!tag_combo_box_.isOpen())
+		{
+			filter_combo_box_.draw();
+		}
 	}
 
 	bool RegistResourceDialog::isModal() const noexcept

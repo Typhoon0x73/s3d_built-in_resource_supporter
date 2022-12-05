@@ -18,7 +18,7 @@ namespace sip
 		/// @param items 
 		/// @param font 
 		/// @param pos 
-		explicit SimpleComboBox(const Array<String>& items, const Font& font, const Vec2& pos = { 0, 0 });
+		explicit SimpleComboBox(const Array<String>* items, Font* font, const Vec2& pos = { 0, 0 }, const SizeF& size = { 0, 0 });
 
 		/// @brief
 		/// @return 
@@ -46,13 +46,26 @@ namespace sip
 		/// @return 
 		String getSelectItem() const noexcept;
 
+		/// @brief 
+		void close() noexcept;
+
+		/// @brief 
+		/// @return 
+		bool isOpen() const noexcept;
+
 	private:
 
 		/// @brief 
-		Font font_;
+		Font* font_;
 
 		/// @brief 
-		Array<String> items_;
+		const Array<String>* items_;
+
+		/// @brief 
+		Vec2 scroll_;
+
+		/// @brief 
+		Vec2 scroll_max_;
 
 		/// @brief 
 		size_t index_;
@@ -68,9 +81,6 @@ namespace sip
 
 		/// @brief 
 		bool is_open_;
-
-		/// @brief 
-		double scroll_;
 
 		/// @brief 
 		RectF pulldown_rect_;

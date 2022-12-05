@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "IDialog.h"
+#include "../ComboBox/SimpleComboBox.h"
 
 namespace sip
 {
@@ -76,6 +77,21 @@ namespace sip
 
 		/// @brief 
 		RectF base_rect_;
+
+		/// @brief 
+		Font* font_;
+
+		/// @brief 
+		Array<String> tag_names_;
+
+		/// @brief 
+		Array<String> filter_names_;
+
+		/// @brief 
+		SimpleComboBox filter_combo_box_;
+
+		/// @brief 
+		SimpleComboBox tag_combo_box_;
 	};
 }
 
