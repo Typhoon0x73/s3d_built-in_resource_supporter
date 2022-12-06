@@ -76,6 +76,7 @@ namespace sip
 			(*resource_page)[k].clear();
 			for (size_t i : step(section->getTagSize()))
 			{
+				_CRT_UNUSED(i);
 				(*resource_page)[k].emplace_back(PageListParam());
 			}
 		}

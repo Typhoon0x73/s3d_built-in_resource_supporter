@@ -44,7 +44,6 @@ namespace sip
 		}
 		const double padding = 10.0;
 		const double item_h  = gui_font_->fontSize() + padding * 1.5;
-		const auto   index   = section_no - 1;
 		auto&  param     = (*page_list_param_ptr_)[tab_no];
 		double offset_y  = padding - param.scroll.y + render_rect_.y;
 		const auto& tags = section->getTags();
@@ -100,7 +99,6 @@ namespace sip
 
 		const auto   tab_no     = *select_tab_no_ptr_;
 		const auto   section_no = section_table[tab_no];
-		const auto   index      = section_no - 1;
 		const auto&  param      = (*page_list_param_ptr_)[tab_no];
 		const double padding    = 10.0;
 		const double item_h     = gui_font_->fontSize() + padding * 1.5;

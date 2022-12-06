@@ -84,8 +84,8 @@ namespace sip
 					pos.y += rect_.h;
 				}
 			}
-			scroll_.y = Clamp(scroll_.y, 0.0, scroll_max_.y - pulldown_rect_.h + (padding_.y * (items_->size() + 1)));
-			scroll_.x = Clamp(scroll_.x, 0.0, scroll_max_.x - pulldown_rect_.w + (padding_.x * 2));
+			scroll_.y = Clamp(scroll_.y, 0.0, Max(0.0, scroll_max_.y - pulldown_rect_.h + (padding_.y * (items_->size() + 1))));
+			scroll_.x = Clamp(scroll_.x, 0.0, Max(0.0, scroll_max_.x - pulldown_rect_.w + (padding_.x * 2)));
 		}
 	}
 
@@ -100,8 +100,6 @@ namespace sip
 		{
 			return;
 		}
-
-		//rect_.drawFrame(1, 0, is_open_ ? Palette::Orange : Palette::Gray);
 
 		Vec2 pos = rect_.pos;
 
