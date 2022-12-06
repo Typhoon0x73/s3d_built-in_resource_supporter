@@ -24,6 +24,14 @@ namespace sip
 
 		/// @brief 
 		Optional<size_t> select_no{ none };
+
+		void init()
+		{
+			scroll     = { 0.0, 0.0 };
+			scroll_max = { 0.0, 0.0 };
+			page_size  = { 0.0, 0.0 };
+			select_no  = none;
+		}
 	};
 	using TagParams      = Array<PageListParam>;
 	using ResourceParams = Array<TagParams>;

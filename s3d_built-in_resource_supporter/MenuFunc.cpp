@@ -30,6 +30,7 @@ namespace sip
 		auto relative_path = g_pGetBlackboard(FilePath*     const)->get("relative_path");
 		auto vcxproj_path  = g_pGetBlackboard(FilePath*     const)->get("vcxproj_path");
 		auto resource_path = g_pGetBlackboard(FilePath*     const)->get("resource_path");
+		auto tag_page      = g_pGetBlackboard(TagParams*    const)->get("tag_page_list_params");
 		auto resource_page = g_pGetBlackboard(ResourceParams* const)->get("resource_page_list_params");
 		if (
 			resource_info == nullptr
@@ -40,6 +41,7 @@ namespace sip
 			|| relative_path == nullptr
 			|| vcxproj_path == nullptr
 			|| resource_path == nullptr
+			|| tag_page == nullptr
 			|| resource_page == nullptr
 			)
 		{
@@ -70,8 +72,8 @@ namespace sip
 			{
 				continue;
 			}
+			(*tag_page)[k].init();
 			(*resource_page)[k].clear();
-			(*resource_page)[k].reserve(section->getTagSize());
 			for (size_t i : step(section->getTagSize()))
 			{
 				(*resource_page)[k].emplace_back(PageListParam());
@@ -123,14 +125,29 @@ namespace sip
 		auto filters_info = g_pGetBlackboard(XMLInfo* const)->get("filters_info");
 		auto vcxproj_path = g_pGetBlackboard(FilePath* const)->get("vcxproj_path");
 		auto resource_path = g_pGetBlackboard(FilePath* const)->get("resource_path");
+		auto tag_page = g_pGetBlackboard(TagParams* const)->get("tag_page_list_params");
+		auto resource_page = g_pGetBlackboard(ResourceParams* const)->get("resource_page_list_params");
 		if (resource_info == nullptr
 			|| vcxproj_info == nullptr
 			|| vcxproj_path == nullptr
 			|| resource_path == nullptr
-			|| filters_info == nullptr)
+			|| filters_info == nullptr
+			|| tag_page == nullptr
+			|| resource_page == nullptr
+			)
 		{
 			Logger << U"アプリケーションデータが正常に取得できませんでした。\n";
 			return false;
+		}
+		for (size_t k : step(2))
+		{
+			auto section = resource_info->getSection(section_table[k]);
+			if (section == nullptr)
+			{
+				continue;
+			}
+			(*tag_page)[k].init();
+			(*resource_page)[k].clear();
 		}
 		*resource_path = U"";
 		*vcxproj_path = U"";
