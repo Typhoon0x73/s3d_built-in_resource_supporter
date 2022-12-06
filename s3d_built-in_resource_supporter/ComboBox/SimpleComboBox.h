@@ -35,6 +35,10 @@ namespace sip
 		void setPos(const Vec2& pos) noexcept;
 
 		/// @brief 
+		/// @param index  
+		void setIndex(size_t index) noexcept;
+
+		/// @brief 
 		/// @return 
 		const RectF& getRect() const noexcept;
 

@@ -55,6 +55,12 @@ namespace sip
 		{
 			if (pulldown_rect_.mouseOver())
 			{
+				scroll_max_.y = padding_.y;
+				for (const auto& item : *items_)
+				{
+					scroll_max_.x = Max(scroll_max_.x, (*font_)(item).region().w + padding_.x * 2);
+					scroll_max_.y += (*font_).height() + padding_.y;
+				}
 				if (KeyShift.pressed())
 				{
 					scroll_.x += Mouse::Wheel() * 8;
@@ -143,6 +149,11 @@ namespace sip
 	void SimpleComboBox::setPos(const Vec2& pos) noexcept
 	{
 		rect_.setPos(pos);
+	}
+
+	void SimpleComboBox::setIndex(size_t index) noexcept
+	{
+		index_ = index;
 	}
 
 	const RectF& SimpleComboBox::getRect() const noexcept

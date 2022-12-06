@@ -42,11 +42,27 @@ namespace sip
 		, edit_{}
 		, base_rect_{ Arg::center_<RectF::position_type>(Scene::CenterF()), Scene::Size().x * 0.7, Scene::Size().y * 0.6 }
 		, font_{ g_pGetBlackboard(Font* const)->get("gui_font") }
+		, path_rect_{ base_rect_.x + base_rect_.w * 0.1, base_rect_.y + 40, base_rect_.w * 0.7, 30 }
+		, load_rect_{ base_rect_.rightX() - base_rect_.w * 0.1 - 30, base_rect_.y + 40, 30, 30 }
+		, cancel_rect_{ load_rect_.x, base_rect_.bottomY() - 30 - 30, 30, 30 }
+		, regist_rect_{ cancel_rect_.x - 30 - 30, cancel_rect_.y, 30, 30 }
 		, tag_names_{ getTags() }
 		, filter_names_{ getFilters() }
-		, tag_combo_box_{ &tag_names_, font_, { 160, 250 }, { base_rect_.w * 0.7 + 60, 150 } }
-		, filter_combo_box_{ &filter_names_, font_, { 160, 320 }, { base_rect_.w * 0.7 + 60, 150 } }
+		, tag_combo_box_{ &tag_names_, font_, { path_rect_.x, 250 }, { base_rect_.w * 0.8, 150 } }
+		, filter_combo_box_{ &filter_names_, font_, { path_rect_.x, 320 }, { base_rect_.w * 0.8, 150 } }
 	{
+		for (size_t i : step(filter_names_.size()))
+		{
+			if (filter_names_[i].compare(edit_.filter) == 0)
+			{
+				filter_combo_box_.setIndex(i);
+				break;
+			}
+		}
+		if (tag_names_.size() > 0)
+		{
+			edit_.tag = tag_names_[0];
+		}
 	}
 
 	RegistResourceDialog::~RegistResourceDialog() noexcept
@@ -56,8 +72,6 @@ namespace sip
 	bool RegistResourceDialog::update() noexcept
 	{
 		auto command_manager = g_pGetBlackboard(CommandManager* const)->get("command_manager");
-		auto resource_info   = g_pGetBlackboard(ResourceInfo*   const)->get("resource_info");
-		auto edit_filters    = g_pGetBlackboard(EditFilters*    const)->get("edit_filters");
 		if (command_manager == nullptr)
 		{
 			Logger << U"マネージャーが正常に取得できませんでした。\n";
@@ -77,6 +91,38 @@ namespace sip
 		{
 			filter_combo_box_.close();
 		}
+		if (not tag_combo_box_.isEmpty())
+		{
+			edit_.tag = tag_combo_box_.getSelectItem();
+		}
+		if (not filter_combo_box_.isEmpty())
+		{
+			edit_.filter = filter_combo_box_.getSelectItem();
+		}
+		if (load_rect_.leftClicked())
+		{
+			tag_combo_box_.close();
+			filter_combo_box_.close();
+			load_resource();
+		}
+		if (regist_rect_.leftClicked())
+		{
+			RegistResourceCommand::CreateInfo info;
+			info.path       = edit_.path;
+			info.tag        = edit_.tag;
+			info.section    = 2;
+			info.filter     = edit_.filter;
+			info.extensions = edit_.extensions;
+			if (command_manager->regist(std::move(std::make_unique<RegistResourceCommand>(info))))
+			{
+				result_ = Result::Success;
+			}
+		}
+		if (cancel_rect_.leftClicked())
+		{
+			result_ = Result::Cancel;
+		}
+
 		if (result_ != Result::None)
 		{
 			return false;
@@ -96,17 +142,35 @@ namespace sip
 			.drawShadow({  5,  5 }, 10.0, 3.0, Palette::Darkgray)
 			.draw(col_mng->getMainBackground());
 
-		RectF path_rect{ base_rect_.x, base_rect_.y, base_rect_.w * 0.7, 30 };
-		path_rect.movedBy(40, 40).rounded(5)
+		path_rect_.rounded(5)
 			.drawShadow({  2,  2 }, 5.0, 0.0, Palette::Whitesmoke)
 			.drawShadow({ -2, -2 }, 5.0, 0.0, Palette::Darkgray)
 			.draw(col_mng->getMainBackground());
+		(*font_)(edit_.path).draw(path_rect_.stretched({ -10, 0 }), Palette::Dimgray);
+		
+		Vec2 light_shadow_pos = (load_rect_.leftPressed() ? Vec2{  2,  2 } : Vec2{ -2, -2 });
+		Vec2 dark_shadow_pos  = (load_rect_.leftPressed() ? Vec2{ -2, -2 } : Vec2{  2,  2 });
+		ColorF mouse_over_col = (load_rect_.mouseOver()   ? ColorF(Palette::Gainsboro) : col_mng->getMainBackground());
+		load_rect_.rounded(5)
+			.drawShadow(light_shadow_pos, 5.0, 0.0, Palette::Whitesmoke)
+			.drawShadow(dark_shadow_pos , 5.0, 0.0, Palette::Darkgray)
+			.draw(mouse_over_col);
 
-		RectF load_rect{ path_rect.rightX() + 30, base_rect_.y, 30, 30 };
-		load_rect.movedBy(40, 40).rounded(5)
-			.drawShadow({ -2, -2 }, 5.0, 0.0, Palette::Whitesmoke)
-			.drawShadow({  2,  2 }, 5.0, 0.0, Palette::Darkgray)
-			.draw(col_mng->getMainBackground());
+		light_shadow_pos = (cancel_rect_.leftPressed() ? Vec2{  2,  2 } : Vec2{ -2, -2 });
+		dark_shadow_pos  = (cancel_rect_.leftPressed() ? Vec2{ -2, -2 } : Vec2{  2,  2 });
+		mouse_over_col   = (cancel_rect_.mouseOver()   ? ColorF(Palette::Gainsboro) : col_mng->getMainBackground());
+		cancel_rect_.rounded(5)
+			.drawShadow(light_shadow_pos, 5.0, 0.0, Palette::Whitesmoke)
+			.drawShadow(dark_shadow_pos , 5.0, 0.0, Palette::Darkgray)
+			.draw(mouse_over_col);
+		
+		light_shadow_pos = (regist_rect_.leftPressed() ? Vec2{  2,  2 } : Vec2{ -2, -2 });
+		dark_shadow_pos  = (regist_rect_.leftPressed() ? Vec2{ -2, -2 } : Vec2{  2,  2 });
+		mouse_over_col   = (regist_rect_.mouseOver()   ? ColorF(Palette::Gainsboro) : col_mng->getMainBackground());
+		regist_rect_.rounded(5)
+			.drawShadow(light_shadow_pos, 5.0, 0.0, Palette::Whitesmoke)
+			.drawShadow(dark_shadow_pos , 5.0, 0.0, Palette::Darkgray)
+			.draw(mouse_over_col);
 
 		tag_combo_box_.draw();
 		if (!tag_combo_box_.isOpen())
@@ -144,10 +208,21 @@ namespace sip
 			return;
 		}
 		edit_.path = FileSystem::RelativePath(open_file.value(), FileSystem::ParentPath(*resource_path));
+		auto tmp_tag = FileSystem::Extension(edit_.path).uppercased();
 		if (edit_.tag.compare(U"") == 0)
 		{
-			edit_.tag = FileSystem::Extension(edit_.path).uppercased();
-			//tag_list_box_state_.selectedItemIndex = 0;
+			edit_.tag = tmp_tag;
+		}
+		for (size_t i : step(tag_names_.size()))
+		{
+			if (i != 0 && tag_names_[i].compare(tmp_tag) == 0)
+			{
+				std::swap(tag_names_[0], tag_names_[i]);
+			}
+		}
+		if (tag_names_.size() <= 0 || tag_names_[0].compare(tmp_tag) != 0)
+		{
+			tag_names_.push_front(tmp_tag);
 		}
 	}
 }

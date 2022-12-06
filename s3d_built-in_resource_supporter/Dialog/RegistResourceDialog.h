@@ -82,6 +82,18 @@ namespace sip
 		Font* font_;
 
 		/// @brief 
+		RectF path_rect_;
+
+		/// @brief 
+		RectF load_rect_;
+
+		/// @brief 
+		RectF cancel_rect_;
+
+		/// @brief 
+		RectF regist_rect_;
+
+		/// @brief 
 		Array<String> tag_names_;
 
 		/// @brief 

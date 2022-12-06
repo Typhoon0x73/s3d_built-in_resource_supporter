@@ -6,6 +6,7 @@
 #include "../ResourceInfo/ResourceSection.h"
 #include "../ResourceInfo/ResourceTag.h"
 #include "../ResourceInfo/ResourceFactory.h"
+#include "../ToolDefine.h"
 
 namespace sip
 {
@@ -26,10 +27,12 @@ namespace sip
 		auto edit_filters = g_pGetBlackboard(EditFilters* const)->get("edit_filters");
 		auto resource_info = g_pGetBlackboard(ResourceInfo* const)->get("resource_info");
 		auto relative_path = g_pGetBlackboard(FilePath* const)->get("relative_path");
+		auto resource_page_list_params = g_pGetBlackboard(ResourceParams* const)->get("resource_page_list_params");
 		if (edit_vcxproj == nullptr
 			|| edit_filters == nullptr
 			|| resource_info == nullptr
-			|| relative_path == nullptr)
+			|| relative_path == nullptr
+			|| resource_page_list_params == nullptr)
 		{
 			Logger << U"アプリケーションデータの取得に失敗しました。\n";
 			return false;
@@ -78,6 +81,15 @@ namespace sip
 		}
 		if (has_regist_tag_)
 		{
+			size_t select_tab_no;
+			for (select_tab_no = 0; select_tab_no < 2; ++select_tab_no)
+			{
+				if (section_table[select_tab_no] == info_.section)
+				{
+					break;
+				}
+			}
+			(*resource_page_list_params)[select_tab_no].push_back(PageListParam());
 			if (!edit_filters->addItemGroup(info_.tag))
 			{
 				Logger << U"アイテムグループ(filters)の追加に失敗しました。\n";
@@ -108,10 +120,14 @@ namespace sip
 		auto edit_filters = g_pGetBlackboard(EditFilters* const)->get("edit_filters");
 		auto resource_info = g_pGetBlackboard(ResourceInfo* const)->get("resource_info");
 		auto relative_path = g_pGetBlackboard(FilePath* const)->get("relative_path");
+		auto resource_page_list_params = g_pGetBlackboard(ResourceParams* const)->get("resource_page_list_params");
+		auto tag_page_list_params = g_pGetBlackboard(TagParams* const)->get("tag_page_list_params");
 		if (edit_vcxproj == nullptr
 			|| edit_filters == nullptr
 			|| resource_info == nullptr
-			|| relative_path == nullptr)
+			|| relative_path == nullptr
+			|| tag_page_list_params == nullptr
+			|| resource_page_list_params == nullptr)
 		{
 			Logger << U"アプリケーションデータの取得に失敗しました。\n";
 			return false;
@@ -149,6 +165,27 @@ namespace sip
 		tag->erase(info_.path);
 		if (has_regist_tag_)
 		{
+			size_t select_tab_no;
+			for (select_tab_no = 0; select_tab_no < 2; ++select_tab_no)
+			{
+				if (section_table[select_tab_no] == info_.section)
+				{
+					break;
+				}
+			}
+			(*resource_page_list_params)[select_tab_no].pop_back();
+			int64_t tag_max = (*resource_page_list_params)[select_tab_no].size();
+			if (tag_max <= (*tag_page_list_params)[select_tab_no].select_no)
+			{
+				if (tag_max - 1 < 0)
+				{
+					(*tag_page_list_params)[select_tab_no].select_no = none;
+				}
+				else
+				{
+					(*tag_page_list_params)[select_tab_no].select_no = tag_max - 1;
+				}
+			}
 			if (!edit_vcxproj->eraseItemGroup(info_.tag))
 			{
 				Logger << U"アイテムグループ(vcxproj)の削除に失敗しました。\n";
