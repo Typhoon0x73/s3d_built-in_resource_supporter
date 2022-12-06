@@ -50,6 +50,7 @@ namespace sip
 		, filter_names_{ getFilters() }
 		, tag_combo_box_{ &tag_names_, font_, { path_rect_.x, 250 }, { base_rect_.w * 0.8, 150 } }
 		, filter_combo_box_{ &filter_names_, font_, { path_rect_.x, 320 }, { base_rect_.w * 0.8, 150 } }
+		, open_file_texture_{ U"📂"_emoji }
 	{
 		for (size_t i : step(filter_names_.size()))
 		{
@@ -155,6 +156,10 @@ namespace sip
 			.drawShadow(light_shadow_pos, 5.0, 0.0, Palette::Whitesmoke)
 			.drawShadow(dark_shadow_pos , 5.0, 0.0, Palette::Darkgray)
 			.draw(mouse_over_col);
+
+		const auto tex_scale =
+			load_rect_.w / open_file_texture_.width();
+		open_file_texture_.scaled(tex_scale * 0.65).drawAt(load_rect_.center());
 
 		light_shadow_pos = (cancel_rect_.leftPressed() ? Vec2{  2,  2 } : Vec2{ -2, -2 });
 		dark_shadow_pos  = (cancel_rect_.leftPressed() ? Vec2{ -2, -2 } : Vec2{  2,  2 });

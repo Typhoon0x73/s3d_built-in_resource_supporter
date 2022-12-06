@@ -104,6 +104,9 @@ namespace sip
 
 		/// @brief 
 		SimpleComboBox tag_combo_box_;
+
+		/// @brief 
+		Texture open_file_texture_;
 	};
 }
 
