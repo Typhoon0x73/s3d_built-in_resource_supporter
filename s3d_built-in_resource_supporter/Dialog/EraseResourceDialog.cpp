@@ -3,35 +3,34 @@
 
 namespace sip
 {
-	EraseResourceDialog::EraseResourceDialog()
-		: result_{ 0 }
+	EraseResourceDialog::EraseResourceDialog() noexcept
 	{
 	}
 
-	EraseResourceDialog::~EraseResourceDialog()
+	EraseResourceDialog::~EraseResourceDialog() noexcept
 	{
 	}
 
-	bool EraseResourceDialog::update()
+	bool EraseResourceDialog::update() noexcept
 	{
 		return false;
 	}
 
-	void EraseResourceDialog::draw() const
+	void EraseResourceDialog::draw() const noexcept
 	{
 	}
 
-	bool EraseResourceDialog::isModal() const
-	{
-		return true;
-	}
-
-	bool EraseResourceDialog::isEnableCover() const
+	bool EraseResourceDialog::isModal() const noexcept
 	{
 		return true;
 	}
 
-	std::int32_t EraseResourceDialog::result() const
+	bool EraseResourceDialog::isEnableCover() const noexcept
+	{
+		return true;
+	}
+
+	std::int32_t EraseResourceDialog::result() const noexcept
 	{
 		return result_;
 	}

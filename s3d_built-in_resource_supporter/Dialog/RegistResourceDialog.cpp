@@ -172,7 +172,7 @@ namespace sip
 			.draw(mouse_over_col);
 		tex_scale =
 			cancel_rect_.w / cancel_texture_.width();
-		cancel_texture_.scaled(tex_scale * 0.65).drawAt(load_rect_.center());
+		cancel_texture_.scaled(tex_scale * 0.65).drawAt(cancel_rect_.center());
 		
 		
 		light_shadow_pos = (regist_rect_.leftPressed() ? Vec2{  2,  2 } : Vec2{ -2, -2 });
@@ -184,7 +184,7 @@ namespace sip
 			.draw(mouse_over_col);
 		tex_scale =
 			regist_rect_.w / regist_texture_.width();
-		regist_texture_.scaled(tex_scale * 0.65).drawAt(load_rect_.center());
+		regist_texture_.scaled(tex_scale * 0.65).drawAt(regist_rect_.center());
 
 		tag_combo_box_.draw();
 		if (!tag_combo_box_.isOpen())

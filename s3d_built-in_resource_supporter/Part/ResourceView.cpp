@@ -76,7 +76,7 @@ namespace sip
 				.movedBy(render_rect_.pos);
 			if (button_rect.leftClicked())
 			{
-				if (!MenuFunc::)
+				if (!MenuFunc::eraseResource())
 				{
 
 				}
