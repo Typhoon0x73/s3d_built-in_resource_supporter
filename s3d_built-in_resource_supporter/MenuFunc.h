@@ -41,6 +41,10 @@ namespace sip
 		/// @brief 
 		/// @return 
 		[[nodiscard]] static bool registResource() noexcept;
+
+		/// @brief 
+		/// @return 
+		[[nodiscard]] static bool eraseResource() noexcept;
 	};
 
 	/// @brief 
@@ -66,6 +70,10 @@ namespace sip
 		/// @brief 
 		/// @return 
 		[[nodiscard]] static bool existUndoCommand() noexcept;
+
+		/// @brief 
+		/// @return 
+		[[nodiscard]] static bool existSelectUserResource() noexcept;
 
 	};
 }

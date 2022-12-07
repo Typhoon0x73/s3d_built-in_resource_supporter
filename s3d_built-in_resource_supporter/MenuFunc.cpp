@@ -11,6 +11,7 @@
 #include "Command/RegistResourceCommand.h"
 #include "Dialog/DialogManager.h"
 #include "Dialog/RegistResourceDialog.h"
+#include "Dialog/EraseResourceDialog.h"
 
 namespace sip
 {
@@ -182,13 +183,25 @@ namespace sip
 
 	bool MenuFunc::registResource() noexcept
 	{
-		auto dialog_manager  = g_pGetBlackboard(DialogManager* const)->get("dialog_manager");
+		auto dialog_manager = g_pGetBlackboard(DialogManager* const)->get("dialog_manager");
 		if (dialog_manager == nullptr)
 		{
 			Logger << U"マネージャーが正常に取得できませんでした。\n";
 			return false;
 		}
 		dialog_manager->regist(std::move(std::make_unique<RegistResourceDialog>()));
+		return true;
+	}
+
+	bool MenuFunc::eraseResource() noexcept
+	{
+		auto dialog_manager = g_pGetBlackboard(DialogManager* const)->get("dialog_manager");
+		if (dialog_manager == nullptr)
+		{
+			Logger << U"マネージャーが正常に取得できませんでした。\n";
+			return false;
+		}
+		dialog_manager->regist(std::move(std::make_unique<EraseResourceDialog>()));
 		return true;
 	}
 
@@ -230,5 +243,10 @@ namespace sip
 			return false;
 		}
 		return (command_manager->undoList().size() > 0);
+	}
+
+	bool MenuEnableFunc::existSelectUserResource() noexcept
+	{
+		return false;
 	}
 }

@@ -309,6 +309,9 @@
     <ClCompile Include="Part\ResourceView.cpp">
       <Filter>Source Files\Part</Filter>
     </ClCompile>
+    <ClCompile Include="Dialog\EraseResourceDialog.cpp">
+      <Filter>Source Files\Dialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">
@@ -1093,6 +1096,9 @@
     </ClInclude>
     <ClInclude Include="SipAssert.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialog\EraseResourceDialog.h">
+      <Filter>Header Files\Dialog</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

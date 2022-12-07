@@ -126,6 +126,7 @@
     <ClCompile Include="Command\RegistTagCommand.cpp" />
     <ClCompile Include="Command\ToggleEnableCommand.cpp" />
     <ClCompile Include="Dialog\DialogManager.cpp" />
+    <ClCompile Include="Dialog\EraseResourceDialog.cpp" />
     <ClCompile Include="Dialog\RegistResourceDialog.cpp" />
     <ClCompile Include="FilterTreeView.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -368,6 +369,7 @@
     <ClInclude Include="Command\ToggleEnableCommand.h" />
     <ClInclude Include="Common\Singleton.h" />
     <ClInclude Include="Dialog\DialogManager.h" />
+    <ClInclude Include="Dialog\EraseResourceDialog.h" />
     <ClInclude Include="Dialog\IDialog.h" />
     <ClInclude Include="Dialog\RegistResourceDialog.h" />
     <ClInclude Include="FilterTreeView.h" />

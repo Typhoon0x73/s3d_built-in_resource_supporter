@@ -12,8 +12,10 @@ namespace sip
 {
 	ResourceView::ResourceView(const RectF& rect) noexcept
 		: render_rect_{ rect }
-		, toggle_render_rect_{ render_rect_.stretched(0, -330, 0, -10) }
 		, regist_button_rect_{ 0, 0, 220, 30 }
+		, erase_button_rect_{ 0, 0, 30, 30 }
+		, erase_texture_{ Texture{ U"🗑️"_emoji } }
+		, toggle_render_rect_{ render_rect_.stretched(0, -330, 0, -10) }
 		, select_tab_{ g_pGetBlackboard(size_t* const)->get("select_tab_no") }
 		, is_only_file_name_{ g_pGetBlackboard(bool* const)->get("is_only_file_name") }
 		, tag_page_list_param_ptr_{ g_pGetBlackboard(TagParams* const)->get("tag_page_list_params") }
@@ -67,6 +69,19 @@ namespace sip
 		auto& page_param = (*page_list_param_ptr_)[tab_no][tag_no.value()];
 		auto& scroll     = page_param.scroll;
 		double offset_y  = 10 - scroll.y + render_rect_.y;
+		if (tab_no == 0 && page_param.select_no.has_value())
+		{
+			auto button_rect = erase_button_rect_
+				.movedBy((render_rect_.w + regist_button_rect_.w) * 0.5 + 10.0, line_y + 10.0)
+				.movedBy(render_rect_.pos);
+			if (button_rect.leftClicked())
+			{
+				if (!MenuFunc::)
+				{
+
+				}
+			}
+		}
 		if (const auto& tag = section->getTag(tag_no.value()))
 		{
 			page_param.page_size.x = 0;

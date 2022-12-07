@@ -31,6 +31,12 @@ namespace sip
 		RectF regist_button_rect_;
 
 		/// @brief 
+		RectF erase_button_rect_;
+
+		/// @brief 
+		Texture erase_texture_;
+
+		/// @brief 
 		RectF render_rect_;
 
 		/// @brief 

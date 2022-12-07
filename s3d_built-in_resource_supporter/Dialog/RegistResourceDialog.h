@@ -1,4 +1,7 @@
 ﻿#pragma once
+#ifndef SIP_REGIST_RESOURCE_DIALOG_H_
+#define SIP_REGIST_RESOURCE_DIALOG_H_
+
 #include "IDialog.h"
 #include "../ComboBox/SimpleComboBox.h"
 
@@ -107,6 +110,13 @@ namespace sip
 
 		/// @brief 
 		Texture open_file_texture_;
+
+		/// @brief 
+		Texture cancel_texture_;
+
+		/// @brief 
+		Texture regist_texture_;
 	};
 }
 
+#endif // !SIP_REGIST_RESOURCE_DIALOG_H_
