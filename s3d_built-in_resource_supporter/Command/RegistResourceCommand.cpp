@@ -14,6 +14,8 @@ namespace sip
 		: info_{ info }
 		, created_guid_{ U"" }
 		, has_regist_tag_{ false }
+		, old_select_tag_{ std::nullopt }
+		, old_select_res_{ std::nullopt }
 	{
 	}
 
@@ -116,6 +118,29 @@ namespace sip
 
 	bool RegistResourceCommand::undo() noexcept
 	{
+		auto tag_params      = g_pGetBlackboard(TagParams* const)->get("tag_page_list_params");
+		auto resource_params = g_pGetBlackboard(ResourceParams* const)->get("resource_page_list_params");
+		auto tab_no          = g_pGetBlackboard(size_t* const)->get("select_tab_no");
+		if (tag_params && resource_params && tab_no)
+		{
+			if (auto tag_no = (*tag_params)[*tab_no].select_no)
+			{
+				old_select_tag_ = tag_no.value();
+				auto res_no = (*resource_params)[*tab_no][tag_no.value()].select_no;
+				if (res_no.has_value())
+				{
+					old_select_res_ = res_no.value();
+				}
+				else
+				{
+					old_select_res_ = std::nullopt;
+				}
+			}
+			else
+			{
+				old_select_tag_ = std::nullopt;
+			}
+		}
 		auto edit_vcxproj = g_pGetBlackboard(EditVcxproj* const)->get("edit_vcxproj");
 		auto edit_filters = g_pGetBlackboard(EditFilters* const)->get("edit_filters");
 		auto resource_info = g_pGetBlackboard(ResourceInfo* const)->get("resource_info");
@@ -207,7 +232,31 @@ namespace sip
 
 	bool RegistResourceCommand::redo() noexcept
 	{
-		return execute();
+		auto result = execute();
+		auto tag_params      = g_pGetBlackboard(TagParams* const)->get("tag_page_list_params");
+		auto resource_params = g_pGetBlackboard(ResourceParams* const)->get("resource_page_list_params");
+		auto tab_no          = g_pGetBlackboard(size_t* const)->get("select_tab_no");
+		if (tag_params && resource_params && tab_no)
+		{
+			if (auto tag_no = (*tag_params)[*tab_no].select_no)
+			{
+				old_select_tag_ = tag_no.value();
+				auto res_no = (*resource_params)[*tab_no][tag_no.value()].select_no;
+				if (res_no.has_value())
+				{
+					old_select_res_ = res_no.value();
+				}
+				else
+				{
+					old_select_res_ = std::nullopt;
+				}
+			}
+			else
+			{
+				old_select_tag_ = std::nullopt;
+			}
+		}
+		return result;
 	}
 
 	std::string RegistResourceCommand::log() const noexcept
@@ -218,6 +267,8 @@ namespace sip
 			+ Unicode::Narrow(U"\t path       : {}\n"_fmt(info_.path))
 			+ Unicode::Narrow(U"\t filter     : {}\n"_fmt(info_.filter))
 			+ Unicode::Narrow(U"\t extensions : {}\n"_fmt(info_.extensions))
+			+ Unicode::Narrow(U"\t select_tag : {}\n"_fmt(old_select_tag_.has_value()))
+			+ Unicode::Narrow(U"\t select_res : {}\n"_fmt(old_select_res_.has_value()))
 			;
 	}
 }

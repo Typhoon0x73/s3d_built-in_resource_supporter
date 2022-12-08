@@ -65,6 +65,12 @@ namespace sip
 
 		/// @brief 
 		String created_guid_;
+
+		/// @brief 
+		std::optional<std::size_t> old_select_tag_;
+
+		/// @brief 
+		std::optional<std::size_t> old_select_res_;
 	};
 }
 
