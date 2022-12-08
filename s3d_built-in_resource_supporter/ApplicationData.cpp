@@ -67,7 +67,7 @@ namespace sip
 	{
 		// 解放
 		FileSystem::ChangeCurrentDirectory(FileSystem::InitialDirectory());
-		SASSERT(SaveSettingsINI(U"settings.ini"));
+		//SASSERT(SaveSettingsINI(String(title_name) + U".ini"));
 		g_BlackboardRelease(Font* const);
 		g_BlackboardRelease(size_t* const);
 		g_BlackboardRelease(bool* const);

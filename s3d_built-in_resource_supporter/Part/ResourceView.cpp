@@ -44,6 +44,15 @@ namespace sip
 		const auto  section_no = section_table[tab_no];
 		const auto  tag_no     = (*tag_page_list_param_ptr_)[tab_no].select_no;
 		const auto& section    = resource_info->getSection(section_no);
+		if (!tag_no)
+		{
+			return;
+		}
+		if (section == nullptr)
+		{
+			return;
+		}
+		auto& page_param = (*page_list_param_ptr_)[tab_no][tag_no.value()];
 		auto line_y = render_rect_.h - (regist_button_rect_.h + 20);
 		if (tab_no == 0 && MenuEnableFunc::isOpen())
 		{
@@ -57,31 +66,22 @@ namespace sip
 
 				}
 			}
-		}
-		if (!tag_no)
-		{
-			return;
-		}
-		if (section == nullptr)
-		{
-			return;
-		}
-		auto& page_param = (*page_list_param_ptr_)[tab_no][tag_no.value()];
-		auto& scroll     = page_param.scroll;
-		double offset_y  = 10 - scroll.y + render_rect_.y;
-		if (tab_no == 0 && page_param.select_no.has_value())
-		{
-			auto button_rect = erase_button_rect_
-				.movedBy((render_rect_.w + regist_button_rect_.w) * 0.5 + 10.0, line_y + 10.0)
-				.movedBy(render_rect_.pos);
-			if (button_rect.leftClicked())
+			if (page_param.select_no.has_value())
 			{
-				if (!MenuFunc::eraseResource())
+				button_rect = erase_button_rect_
+					.movedBy((render_rect_.w + regist_button_rect_.w) * 0.5 + 10.0, line_y + 10.0)
+					.movedBy(render_rect_.pos);
+				if (button_rect.leftClicked())
 				{
+					if (!MenuFunc::eraseResource())
+					{
 
+					}
 				}
 			}
 		}
+		auto& scroll    = page_param.scroll;
+		double offset_y = 10 - scroll.y + render_rect_.y;
 		if (const auto& tag = section->getTag(tag_no.value()))
 		{
 			page_param.page_size.x = 0;
@@ -207,6 +207,24 @@ namespace sip
 					.drawShadow({ -3, -3 }, 5.0, 0.0, Palette::Whitesmoke)
 					.draw(button_color);
 				SimpleGUI::GetFont()(U"regist resource").drawAt(draw_regist_region.center(), Palette::Dimgray);
+				if (MenuEnableFunc::existSelectUserResource())
+				{
+					button_color =
+						(erase_button_rect_
+							.movedBy((render_rect_.w + regist_button_rect_.w) * 0.5 + 10.0, line_y + 10.0)
+							.movedBy(render_rect_.pos).mouseOver()
+						? ColorF{ Palette::Gainsboro }
+					: col_mng->getMainBackground());
+					auto draw_erase_region = erase_button_rect_
+						.movedBy((render_rect_.w + regist_button_rect_.w) * 0.5 + 10.0, line_y + 10.0)
+						.rounded(5.0)
+						.drawShadow({  3,  3 }, 5.0, 0.0, Palette::Darkgray)
+						.drawShadow({ -3, -3 }, 5.0, 0.0, Palette::Whitesmoke)
+						.draw(button_color);
+					const auto tex_scale =
+						erase_button_rect_.w / erase_texture_.width();
+					erase_texture_.scaled(tex_scale * 0.65).drawAt(draw_erase_region.center());
+				}
 			}
 		}
 		render_rect_.rounded(5.0)

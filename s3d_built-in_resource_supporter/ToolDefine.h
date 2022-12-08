@@ -11,6 +11,12 @@ namespace sip
 	extern const size_t section_table[2];
 
 	/// @brief 
+	constexpr const char32_t resource_guidline_url[] = U"https://zenn.dev/reputeless/articles/article-minimum";
+
+	/// @brief 
+	constexpr const char32_t title_name[] = U"built-in_resource_supporter";
+
+	/// @brief 
 	struct PageListParam
 	{
 		/// @brief 
@@ -73,16 +79,16 @@ namespace sip
 
 		{
 			U"edit",
-			{ U"undo", U"redo", U"regist resource" },
-			{ MenuFunc::undo, MenuFunc::redo, MenuFunc::registResource },
-			{ MenuEnableFunc::existExecCommand, MenuEnableFunc::existUndoCommand, MenuEnableFunc::isOpen }
+			{ U"undo", U"redo", U"regist resource", U"erase resource" },
+			{ MenuFunc::undo, MenuFunc::redo, MenuFunc::registResource, MenuFunc::eraseResource },
+			{ MenuEnableFunc::existExecCommand, MenuEnableFunc::existUndoCommand, MenuEnableFunc::isOpen, MenuEnableFunc::existSelectUserResource }
 		},
 
 		{
 			U"help",
-			{ U"license view on webpage" },
-			{ []() { LicenseManager::ShowInBrowser(); return true; } },
-			{ []() { return true; } }
+			{ U"license view on webpage", U"engine resource built-in cancel guidline" },
+			{ []() { LicenseManager::ShowInBrowser(); return true; }, []() { System::LaunchBrowser(resource_guidline_url); return true; } },
+			{ []() { return true; }, []() { return true; } }
 		},
 	};
 

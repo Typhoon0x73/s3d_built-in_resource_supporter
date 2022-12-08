@@ -247,6 +247,22 @@ namespace sip
 
 	bool MenuEnableFunc::existSelectUserResource() noexcept
 	{
-		return false;
+		auto tab_no               = g_pGetBlackboard(size_t* const)->get("select_tab_no");
+		auto tag_page_params      = g_pGetBlackboard(TagParams* const)->get("tag_page_list_params");
+		auto resource_page_params = g_pGetBlackboard(ResourceParams* const)->get("resource_page_list_params");
+		if (tab_no == nullptr
+			|| tag_page_params == nullptr
+			|| resource_page_params == nullptr
+			)
+		{
+			return false;
+		}
+		const auto tag_no = (*tag_page_params)[*tab_no].select_no;
+		if (not tag_no.has_value())
+		{
+			return false;
+		}
+		const auto& page_param = (*resource_page_params)[*tab_no][tag_no.value()];
+		return page_param.select_no.has_value();
 	}
 }

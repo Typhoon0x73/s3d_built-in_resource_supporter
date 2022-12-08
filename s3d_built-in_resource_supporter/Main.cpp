@@ -62,9 +62,11 @@ void Main()
 	// ウィンドウサイズ、モードを変更
 	//Scene::SetResizeMode(ResizeMode::Actual);
 	//Window::SetStyle(WindowStyle::Sizable);
+
+	Window::SetTitle(title_name);
 	
 	// 設定情報読み込み
-	if (!LoadSettingsINI(U"settings.ini"))
+	if (!LoadSettingsINI(String(title_name) + U".ini"))
 	{
 		// 初回起動の可能性があるのでウィンドウサイズ変更
 		auto window_info = g_pGetBlackboard(WindowInfo* const)->get("window_info");
