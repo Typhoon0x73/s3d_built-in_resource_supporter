@@ -10,6 +10,16 @@ namespace sip
 	{
 	public:
 
+		enum class Result : std::int32_t
+		{
+			Failed = -1,
+			None,
+			Cancel,
+			Success,
+		};
+
+	public:
+
 		/// @brief 
 		explicit EraseResourceDialog() noexcept;
 
@@ -37,8 +47,26 @@ namespace sip
 
 	private:
 
+		/// @brief
+		Font* font_;
+
 		/// @brief 
-		std::int32_t result_;
+		RectF base_rect_;
+
+		/// @brief 
+		RectF cancel_rect_;
+
+		/// @brief 
+		RectF erase_rect_;
+
+		/// @brief 
+		Result result_;
+
+		/// @brief 
+		Texture cancel_texture_;
+
+		/// @brief 
+		Texture erase_texture_;
 	};
 }
 
