@@ -85,7 +85,7 @@ void Main()
 	//dlg_mng->regist(std::move(std::make_unique<RegistResourceDialog>()));
 
 	// リソースデータ
-	auto resource_info = g_pGetBlackboard(ResourceInfo* const)->get("resource_info");
+	//auto resource_info = g_pGetBlackboard(ResourceInfo* const)->get("resource_info");
 
 	// 背景色の変更
 	Scene::SetBackground(col_mng->getMainBackground());
