@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "MenuFunc.h"
 #include "ToolDefine.h"
+#include "ApplicationData.h"
 #include "ResourceInfo/ResourceInfo.h"
 #include "ResourceInfo/ResourceSection.h"
 #include "XMLInfo/XMLInfo.h"
@@ -12,6 +13,7 @@
 #include "Dialog/DialogManager.h"
 #include "Dialog/RegistResourceDialog.h"
 #include "Dialog/EraseResourceDialog.h"
+#include "Dialog/ExitApplicaitonDialog.h"
 
 namespace sip
 {
@@ -122,40 +124,13 @@ namespace sip
 
 	bool MenuFunc::fileClose() noexcept
 	{
-		auto resource_info = g_pGetBlackboard(ResourceInfo* const)->get("resource_info");
-		auto vcxproj_info = g_pGetBlackboard(XMLInfo* const)->get("vcxproj_info");
-		auto filters_info = g_pGetBlackboard(XMLInfo* const)->get("filters_info");
-		auto vcxproj_path = g_pGetBlackboard(FilePath* const)->get("vcxproj_path");
-		auto resource_path = g_pGetBlackboard(FilePath* const)->get("resource_path");
-		auto tag_page = g_pGetBlackboard(TagParams* const)->get("tag_page_list_params");
-		auto resource_page = g_pGetBlackboard(ResourceParams* const)->get("resource_page_list_params");
-		if (resource_info == nullptr
-			|| vcxproj_info == nullptr
-			|| vcxproj_path == nullptr
-			|| resource_path == nullptr
-			|| filters_info == nullptr
-			|| tag_page == nullptr
-			|| resource_page == nullptr
-			)
+		auto app_data = g_pGetBlackboard(ApplicationData* const)->get("app_data");
+		if (app_data == nullptr)
 		{
 			Logger << U"アプリケーションデータが正常に取得できませんでした。\n";
 			return false;
 		}
-		for (size_t k : step(2))
-		{
-			auto section = resource_info->getSection(section_table[k]);
-			if (section == nullptr)
-			{
-				continue;
-			}
-			(*tag_page)[k].init();
-			(*resource_page)[k].clear();
-		}
-		*resource_path = U"";
-		*vcxproj_path = U"";
-		resource_info->clear();
-		vcxproj_info->clear();
-		filters_info->clear();
+		app_data->init();
 		return true;
 	}
 
@@ -202,6 +177,26 @@ namespace sip
 			return false;
 		}
 		dialog_manager->regist(std::move(std::make_unique<EraseResourceDialog>()));
+		return true;
+	}
+
+	bool MenuFunc::appEnd() noexcept
+	{
+		if (MenuEnableFunc::existExecCommand()
+			|| MenuEnableFunc::existUndoCommand())
+		{
+			auto dialog_manager = g_pGetBlackboard(DialogManager* const)->get("dialog_manager");
+			if (dialog_manager == nullptr)
+			{
+				Logger << U"マネージャーが正常に取得できませんでした。\n";
+				return false;
+			}
+			dialog_manager->regist(std::move(std::make_unique<ExitApplicationDialog>()));
+		}
+		else
+		{
+			System::Exit();
+		}
 		return true;
 	}
 

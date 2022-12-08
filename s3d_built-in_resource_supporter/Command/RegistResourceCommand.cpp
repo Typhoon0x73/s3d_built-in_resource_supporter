@@ -190,14 +190,21 @@ namespace sip
 		tag->erase(info_.path);
 		if (has_regist_tag_)
 		{
-			auto tag_no = (*tag_page_list_params)[*tab_no].select_no;
-			(*resource_page_list_params)[*tab_no].erase((*resource_page_list_params)[*tab_no].begin() + tag_no.value());
-			int64_t tag_max = (*resource_page_list_params)[*tab_no].size();
-			if (tag_max <= tag_no.value())
+			if (auto tag_no = (*tag_page_list_params)[*tab_no].select_no)
 			{
-				if (tag_max - 1 >= 0)
+				(*resource_page_list_params)[*tab_no]
+					.erase((*resource_page_list_params)[*tab_no].begin() + tag_no.value());
+				int64_t tag_max = (*resource_page_list_params)[*tab_no].size();
+				if (tag_max <= static_cast<int64_t>(tag_no.value()))
 				{
-					(*tag_page_list_params)[*tab_no].select_no = tag_max - 1;
+					if (tag_max - 1 >= 0)
+					{
+						(*tag_page_list_params)[*tab_no].select_no = tag_max - 1;
+					}
+					else
+					{
+						(*tag_page_list_params)[*tab_no].select_no = none;
+					}
 				}
 			}
 			if (!edit_vcxproj->eraseItemGroup(info_.tag))
@@ -214,6 +221,23 @@ namespace sip
 			{
 				Logger << U"タグの削除に失敗しました。\n";
 				return false;
+			}
+		}
+		if (auto tag_no = (*tag_page_list_params)[*tab_no].select_no)
+		{
+			if ((*resource_page_list_params)[*tab_no].size() > tag_no.value())
+			{
+				if (auto res_no = (*resource_page_list_params)[*tab_no][tag_no.value()].select_no)
+				{
+					if (static_cast<int64_t>(res_no.value()) - 1 >= 0)
+					{
+						(*resource_page_list_params)[*tab_no][tag_no.value()].select_no = res_no.value() - 1;
+					}
+					else
+					{
+						(*resource_page_list_params)[*tab_no][tag_no.value()].select_no = none;
+					}
+				}
 			}
 		}
 		return true;

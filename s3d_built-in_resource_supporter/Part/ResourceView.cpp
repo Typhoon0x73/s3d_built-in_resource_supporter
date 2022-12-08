@@ -66,6 +66,10 @@ namespace sip
 		{
 			return;
 		}
+		if (tag_no.value() >= (*page_list_param_ptr_)[tab_no].size())
+		{
+			return;
+		}
 		auto& page_param = (*page_list_param_ptr_)[tab_no][tag_no.value()];
 		auto& scroll     = page_param.scroll;
 		double offset_y  = 10 - scroll.y + render_rect_.y;

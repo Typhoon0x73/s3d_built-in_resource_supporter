@@ -27,6 +27,9 @@ namespace sip
 		/// @brief 
 		~ApplicationData() noexcept;
 
+		/// @brief 
+		void init() noexcept;
+
 	private:
 
 		/// @brief 

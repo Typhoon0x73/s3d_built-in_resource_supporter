@@ -45,6 +45,10 @@ namespace sip
 		/// @brief 
 		/// @return 
 		[[nodiscard]] static bool eraseResource() noexcept;
+
+		/// @brief 
+		/// @return 
+		[[nodiscard]] static bool appEnd() noexcept;
 	};
 
 	/// @brief 

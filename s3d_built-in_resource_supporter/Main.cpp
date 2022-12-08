@@ -64,6 +64,7 @@ void Main()
 	//Window::SetStyle(WindowStyle::Sizable);
 
 	Window::SetTitle(title_name);
+	System::SetTerminationTriggers(UserAction::CloseButtonClicked);
 	
 	// 設定情報読み込み
 	if (!LoadSettingsINI(String(title_name) + U".ini"))

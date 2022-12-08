@@ -31,6 +31,10 @@ namespace sip
 
 	bool EraseResourceDialog::update() noexcept
 	{
+		if (KeyEscape.down())
+		{
+			result_ = Result::Cancel;
+		}
 		if (erase_rect_.leftClicked())
 		{
 			auto cmd_mng = g_pGetBlackboard(CommandManager* const)->get("command_manager");

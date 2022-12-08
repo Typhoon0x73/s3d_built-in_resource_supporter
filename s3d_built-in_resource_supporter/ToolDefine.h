@@ -72,9 +72,9 @@ namespace sip
 	{
 		{
 			U"file",
-			{ U"open", U"save", U"close" },
-			{ MenuFunc::fileOpen, MenuFunc::fileSave, MenuFunc::fileClose },
-			{ []() { return true; }, MenuEnableFunc::isOpen, MenuEnableFunc::isOpen }
+			{ U"open", U"save", U"close", U"exit" },
+			{ MenuFunc::fileOpen, MenuFunc::fileSave, MenuFunc::fileClose, MenuFunc::appEnd },
+			{ []() { return true; }, MenuEnableFunc::isOpen, MenuEnableFunc::isOpen, []() { return true; } }
 		},
 
 		{

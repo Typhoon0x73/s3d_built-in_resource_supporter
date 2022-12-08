@@ -81,6 +81,10 @@ namespace sip
 			result_ = Result::Failed;
 			return false;
 		}
+		if (KeyEscape.down())
+		{
+			result_ = Result::Cancel;
+		}
 		if (!tag_combo_box_.isOpen())
 		{
 			filter_combo_box_.update();
