@@ -190,25 +190,14 @@ namespace sip
 		tag->erase(info_.path);
 		if (has_regist_tag_)
 		{
-			size_t select_tab_no;
-			for (select_tab_no = 0; select_tab_no < 2; ++select_tab_no)
+			auto tag_no = (*tag_page_list_params)[*tab_no].select_no;
+			(*resource_page_list_params)[*tab_no].erase((*resource_page_list_params)[*tab_no].begin() + tag_no.value());
+			int64_t tag_max = (*resource_page_list_params)[*tab_no].size();
+			if (tag_max <= tag_no.value())
 			{
-				if (section_table[select_tab_no] == info_.section)
+				if (tag_max - 1 >= 0)
 				{
-					break;
-				}
-			}
-			(*resource_page_list_params)[select_tab_no].pop_back();
-			int64_t tag_max = (*resource_page_list_params)[select_tab_no].size();
-			if (tag_max <= (*tag_page_list_params)[select_tab_no].select_no)
-			{
-				if (tag_max - 1 < 0)
-				{
-					(*tag_page_list_params)[select_tab_no].select_no = none;
-				}
-				else
-				{
-					(*tag_page_list_params)[select_tab_no].select_no = tag_max - 1;
+					(*tag_page_list_params)[*tab_no].select_no = tag_max - 1;
 				}
 			}
 			if (!edit_vcxproj->eraseItemGroup(info_.tag))
