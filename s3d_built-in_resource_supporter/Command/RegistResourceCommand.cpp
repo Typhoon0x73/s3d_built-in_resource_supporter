@@ -232,28 +232,27 @@ namespace sip
 
 	bool RegistResourceCommand::redo() noexcept
 	{
-		auto result = execute();
+		auto result = RegistResourceCommand::execute();
 		auto tag_params      = g_pGetBlackboard(TagParams* const)->get("tag_page_list_params");
 		auto resource_params = g_pGetBlackboard(ResourceParams* const)->get("resource_page_list_params");
 		auto tab_no          = g_pGetBlackboard(size_t* const)->get("select_tab_no");
 		if (tag_params && resource_params && tab_no)
 		{
-			if (auto tag_no = (*tag_params)[*tab_no].select_no)
+			if (auto tag_no = old_select_tag_)
 			{
-				old_select_tag_ = tag_no.value();
-				auto res_no = (*resource_params)[*tab_no][tag_no.value()].select_no;
-				if (res_no.has_value())
+				(*tag_params)[*tab_no].select_no = tag_no.value();
+				if (auto res_no = old_select_res_)
 				{
-					old_select_res_ = res_no.value();
+					(*resource_params)[*tab_no][tag_no.value()].select_no = res_no.value();
 				}
 				else
 				{
-					old_select_res_ = std::nullopt;
+					(*resource_params)[*tab_no][tag_no.value()].select_no = std::nullopt;
 				}
 			}
 			else
 			{
-				old_select_tag_ = std::nullopt;
+				(*tag_params)[*tab_no].select_no = std::nullopt;
 			}
 		}
 		return result;
